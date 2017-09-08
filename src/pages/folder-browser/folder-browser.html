@@ -1,0 +1,48 @@
+<ion-content fullscreen padding>
+  <!-- <ion-searchbar (input)="search()" [(ngModel)]="searchWords"></ion-searchbar> -->
+  <span *ngIf="!fileSelect">
+  <ion-list >
+    <button ion-item (click)="prevDir()">
+      ..
+    </button>
+
+    <button ion-item *ngFor="let folder of folders" (click)="goTo(folder)" >
+      {{folder}}
+    </button>
+  </ion-list>
+  <ion-fab right bottom>
+    <button ion-fab color="primary" (click)="select()">
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
+  </span>
+
+  <ion-grid *ngIf="fileSelect" text-center>
+    <ion-row responsive-md wrap>
+      <ion-col (click)="prevDir()" width-50>
+          <ion-icon name="folder"></ion-icon>
+          <ion-label>..</ion-label>
+      </ion-col>        
+      <ion-col *ngFor="let folder of folders" (click)="goTo(folder)" width-40>
+        <ion-icon name="folder"></ion-icon>
+        <ion-label>{{folder}}</ion-label>
+      </ion-col>
+      <ion-col *ngFor="let file of files" (click)="openFile(file)" width-40>
+        <ion-icon name="document"></ion-icon>          
+        <ion-label>{{file}}</ion-label>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+    <button ion-button clear class="top-left" (click)="goBack()">
+      <ion-icon name="arrow-left"></ion-icon>
+    </button>
+    <ion-item>{{path}}</ion-item>
+    <button ion-button clear class="top-right" (click)="doPrompt()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+
+
+
+</ion-content>

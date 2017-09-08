@@ -1,0 +1,278 @@
+import { SettingsProvider } from './../settings/settings';
+import { Injectable } from '@angular/core';
+import { Platform, Events } from 'ionic-angular';
+import { Entry as IEntry, FileEntry, IFile, IWriteOptions } from '@ionic-native/file'
+
+@Injectable()
+export class ExternFilesProvider {
+
+  fileCalls: any;
+  
+  basePath: string;
+  subPath: string;
+  path: string;
+
+
+  base: Array<string> = [];
+  selectedDirPath: string;
+
+  errorMessenger: any
+  successMessenger: any
+
+  openedFile: string;
+
+
+  constructor(private platform: Platform,
+     private events: Events,
+     private settings: SettingsProvider) {
+    console.log('Hello ExternFilesProvider Provider');
+
+    this.checkPlatform()
+  }
+
+  setErrorMessender(dep){
+    this.errorMessenger = dep
+  }
+
+  setSuccessMessenger(dep){
+    this.successMessenger = dep
+  }
+
+
+  checkPlatform(){
+    console.log(this.platform.platforms())
+    if (this.platform.is('electron')) this.initElectronFileCalls();
+    if (this.platform.is('cordova')) this.initCordovaFileCalls();
+  }
+
+  private initElectronFileCalls(){
+    console.log('Setting up for electron...');
+
+    this.fileCalls =  require('electron').remote.require('fs')
+    this.base = ['/home'];
+    this.basePath = 'file:///sdcard';    
+    this.listDirs = this._electronListDirs
+    this.listFiles = this._electronListFiles
+    this.makeDir = this._electronMakeDir
+    this.openFile = this._electronRead
+    this.saveFile = this._electronWrite
+    this.deleteFile = this._electronDeleteFile
+    this.getMetadata = this._electronGetMetadata
+  }
+
+  private initCordovaFileCalls(){
+    console.log('Setting up for cordova...');
+
+    const native = require('@ionic-native/file')
+    this.fileCalls = new native.File()
+    this.base = ['file:///sdcard'];
+    this.basePath = 'file:///sdcard';
+    this.listDirs = this._cordovaListDirs
+    this.listFiles = this._cordovaListFiles
+    this.makeDir = this._cordovaMakeDir
+    this.openFile = this._cordovaRead
+    this.saveFile = this._cordovaWrite
+    this.deleteFile = this._cordovaDelecteFile
+    this.getMetadata = this._cordovaGetMetadata
+  }
+
+
+  /**
+   * ================================================================
+   * Electron/Node.js file calls
+   * ================================================================
+   */
+
+  private _electronWrite(fileName: string, data){
+    let url = `${this.path}/${fileName}`
+    this.fileCalls.writeFileSync(url, data)
+  }
+
+  private _electronRead(fileName: string){
+    let url = `${this.path}/${fileName}`
+    
+    this.onAfterOpenFile(fileName)    
+    return this.fileCalls.readFileSync(url, 'utf-8')
+  }
+
+  private _electronListDirs(){
+    let url = `${this.basePath}/${this.subPath}`
+    
+
+    let res:Array<string> = this.fileCalls.readdirSync(url)
+    return res.filter((en) => {return this.fileCalls.statSync(url + '/' + en).isDirectory()})
+  }
+
+  private _electronListFiles(suffixes?: Array<string>) {
+    let url = `${this.basePath}/${this.subPath}`
+    let res: Array<string> = this.fileCalls.readdirSync(url)
+    let ret = res.filter((en) => { return this.fileCalls.statSync(url + '/' + en).isFile() })
+
+    let rett = [];
+      for (let suffix of suffixes){
+      let regex = new RegExp(suffix + "$", "g");
+      rett = rett.concat(
+        ret.filter((el) => {return el.match(suffix)})
+      )
+    }
+    return rett
+  }
+
+   private _electronGetMetadata(fileNames: Array<string>){
+    let url = `${this.basePath}/${this.subPath}`
+      
+    return fileNames.map((en) => { 
+      let w = this.fileCalls.statSync(url + '/' + en);
+      return {
+        time: w.mtime.getTime(),
+        name: en }
+      })
+   }
+
+   private _electronMakeDir(dirName: string){
+    this.fileCalls.mkdirSync(this.path, dirName)
+  }
+
+  private _electronDeleteFile(fileName: string){
+    let url = `${this.path}/${fileName}`
+    
+    this.fileCalls.unlinkSync(url)    
+  }
+
+  private _electronMoveFile(){
+
+  }
+
+  private _electronRenameFile(){
+
+  }
+
+
+  /**
+   * ================================================================
+   * Cordova file calls
+   * ================================================================
+   */
+
+  private _cordovaWrite(fileName: string, data){
+    let url = `${this.path}/${fileName}`
+    let options: IWriteOptions = {
+      replace: true,
+    }
+    this.fileCalls.writeFile(url, fileName, data, options)
+      .then(() => this.onAfterSaveFile())
+      .catch((e)=>console.log(e));
+  }
+
+  private async _cordovaRead(fileName: string){
+    let url = `${this.path}/${fileName}`
+    
+    let res = await this.fileCalls.readAsText(url, fileName)
+
+    this.onAfterOpenFile(fileName)
+
+    return res
+  }
+
+  private async _cordovaListDirs(){
+    // let dirEntry = await this.file.resolveLocalFilesystemUrl('/storage');
+    let res:Array<IEntry> = await this.fileCalls.listDir(this.path, '.')
+    let ret = res.filter((en) => {return en.isDirectory}).map((en)=> {return en.name})
+    console.log(ret)
+    return ret
+  }
+
+  private async _cordovaListFiles(suffixes?: Array<string>) {
+    // let dirEntry = await this.file.resolveLocalFilesystemUrl('/storage');
+    let res: Array<IEntry> = await this.fileCalls.listDir(this.path, '.');
+    let ret = res.filter((el) => { return el.isFile }).map((el) => {return el.name})
+
+    let rett = []
+    for (let suffix of suffixes){
+      let regex = new RegExp(suffix + "$", "g");
+      rett = rett.concat(
+        ret.filter((el) => {return el.match(suffix)})
+      )
+    }
+    return rett
+  }
+
+  private async _cordovaGetMetadata(fileNames: string){
+    let baseURL = this.path
+    
+    // let fileNames: Array<IEntry> = await this.file.listDir(baseURL, '.'); 
+    let res: Array<IEntry> = await this.fileCalls.listDir(baseURL, '.');
+    let ret = res.filter((en) => { return en.isFile })
+
+    let promises = []
+    ret.forEach((el)=>{
+      promises.push(new Promise((resolve, reject) => {
+        el.getMetadata((ez) => 
+        resolve ({time: ez.modificationTime.getTime(), name: el.name}),
+        (e) => reject(e))
+      })
+    )})
+    return Promise.all(promises)
+  }
+
+  private _cordovaMakeDir(dirName: string){
+    let baseURL = this.path
+    this.fileCalls.createDir(baseURL, dirName, false)
+  }
+
+  private _cordovaDelecteFile(fileName: string){
+    let baseURL = this.path
+    let file:FileEntry = this.fileCalls.getFile(baseURL, fileName)
+      .remove((r)=>console.log(r),(e)=>console.log(e))
+  }
+
+  private _cordovaMoveFile(){
+
+  }
+
+  private _cordovaRenameFile(){
+
+  }
+
+  /**
+   * ================================================================
+   * Public file calls
+   * ================================================================
+   */
+
+  listDirs(): any {}
+  listFiles(): any{}
+  goToDir(dirName) {
+    this.path = this.path + '/' + dirName
+    return this.path
+  }
+  prevDir() {
+    this.path = this.path.replace(/\/\w+$/g, '')
+    return this.path
+  }
+  selectDir(){
+    this.selectedDirPath = this.base.join('/')
+    //this shouldn't be here
+    this.settings.addPath(this.base[this.base.length - 1], this.selectedDirPath) 
+    this.events.publish('folder-selected')
+  }
+  selectFile(){}
+  makeDir(dirName){}
+  openFile(fileName){}
+  saveFile(fileName, data){}
+  deleteFile(fileName){}
+  getMetadata(fileName): any{}
+  moveFile(){}
+  renameFile(){}
+
+  clearPath(){
+    this.base.splice(0, this.base.length)
+  }
+  onAfterSaveFile(){
+    this.events.publish('file-saved')    
+  }
+
+  onAfterOpenFile(fileName: string){
+    this.openedFile = fileName.replace(/\.md$/g,'')
+  }
+}

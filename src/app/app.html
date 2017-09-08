@@ -1,0 +1,43 @@
+<ion-menu [class]="settings.config.theme" [content]="content">
+  <ion-header>
+    <ion-toolbar>
+      <!-- <ion-title center >MEANING</ion-title> -->
+      <ion-searchbar id="title" [(ngModel)]="searchWords" (ionFocus)="showFiles()"  (ionBlur)="showMenu()" (input)="searchFiles()" no-icon placeholder="M E A N I N G"></ion-searchbar>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content id="menu" padding-left>
+    <ion-list >
+      <expandable #mainList [expanded]="true" title="Main">
+        <button menuClose ion-item no-lines *ngFor="let p of main" (click)="p.do()">
+          {{p.title}}
+        </button>
+      </expandable>
+      <hr>      
+      <expandable #pagesList [expanded]="true" title="">
+        <button menuClose ion-item no-lines *ngFor="let p of pages" (click)="openPage(p)">
+          {{p.title}}
+        </button>
+        <button menuClose ion-item no-lines (click)="presentAboutModal()">
+          About
+        </button>
+      </expandable>
+      <hr>      
+      <expandable #projects [expanded]="true" title="Bookmarks">
+        <button ion-item no-lines *ngFor="let path of settings.getPaths()" (click)="loadProjectFiles(path.url)">
+          {{path.name}}
+        </button>
+      </expandable>
+      <hr>
+      <expandable #filesList [expanded]="true" title="Files">
+        <button menuClose ion-item no-lines *ngFor="let file of files" (click)="openFile(file)">
+          {{file}}
+        </button>
+      </expandable>
+    </ion-list>
+  </ion-content>
+
+</ion-menu>
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [class]="settings.config.theme" [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>

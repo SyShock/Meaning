@@ -1,0 +1,17 @@
+expandable {
+    .expandable-header{
+        cursor: pointer;
+    }
+    .expandable-header .label{
+        font-size: larger;
+    }
+    .wrapper > .item {
+        height: 0;
+        display: none;
+
+    }
+    .expanded > .item {
+        height: auto;
+        display: unset;
+    }
+}
