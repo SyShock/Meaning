@@ -48,3 +48,17 @@ Uses Ionic 3 framework and electron.
 - [x] add color-picker
 - [] add more font styles
 - [] add letter spacing
+
+## Building from source
+```
+git clone https://github.com/syshock/meaning.git
+cd meaning
+npm install
+npm run ebuild -- (-w for windows; -l for linux; -m for mac)
+```
+
+## Live development in electron
+```
+ionic serve --no-browser
+npm run electron -- test (optionally, -p <port>; -h <host address>)
+```
