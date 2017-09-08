@@ -1,7 +1,7 @@
 import { Storage } from '@ionic/storage';
 import { SettingsProvider } from './../providers/settings/settings';
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, Events, MenuToggle, ToastController, ModalController } from 'ionic-angular';
+import { Nav, Platform, Events, MenuToggle } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ExternFilesProvider } from '../providers/extern-files/extern-files';
@@ -35,8 +35,6 @@ export class MyApp {
      private events: Events,
      private menu: MenuToggle,
      public settings: SettingsProvider,
-     private toastCtrl: ToastController,
-     private modalCtrl: ModalController,
      private storage: Storage
    ) {
     this.initializeApp();

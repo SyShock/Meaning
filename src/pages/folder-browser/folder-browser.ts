@@ -1,6 +1,6 @@
 import { SettingsProvider } from './../../providers/settings/settings';
 import { HomePage } from './../home/home';
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
 import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
 

@@ -2,9 +2,8 @@ import { SettingsProvider } from './../../providers/settings/settings';
 import { TemplatesComponent } from './../../components/templates/templates';
 import { MarkjaxProvider } from './../../providers/markjax/markjax';
 import { Component, ViewChild } from '@angular/core';
-import { NavController, IonicPage, Events, AlertController, ToastController, NavParams, Platform } from 'ionic-angular';
+import { NavController, IonicPage, Events, AlertController, ToastController, NavParams } from 'ionic-angular';
 import markjax from 'markjax';
-import marked from 'marked';
 import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
 
 @IonicPage()
@@ -48,8 +47,7 @@ export class HomePage {
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     public renderer: MarkjaxProvider,
-    private settings: SettingsProvider,
-    private platform: Platform) {
+    private settings: SettingsProvider) {
       this.events.subscribe('file-opened', (r) => this.onFileOpened(r))
       this.events.subscribe('to-save-file', () => this._saveFile())
       this.events.subscribe('to-save-file-as', () => this.doPrompt())

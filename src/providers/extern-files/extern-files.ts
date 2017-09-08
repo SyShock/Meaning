@@ -1,4 +1,3 @@
-import { SettingsProvider } from './../settings/settings';
 import { Injectable } from '@angular/core';
 import { Platform, Events } from 'ionic-angular';
 import { Entry as IEntry, FileEntry, IFile, IWriteOptions } from '@ionic-native/file'
@@ -17,8 +16,7 @@ export class ExternFilesProvider {
 
 
   constructor(private platform: Platform,
-     private events: Events,
-     private settings: SettingsProvider) {
+     private events: Events) {
     console.log('Hello ExternFilesProvider Provider');
 
     this.checkPlatform()

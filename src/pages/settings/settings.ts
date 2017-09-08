@@ -1,8 +1,5 @@
 import { FolderBrowserPage } from './../folder-browser/folder-browser';
-import { ExternFilesProvider } from './../../providers/extern-files/extern-files';
 import { SettingsProvider } from './../../providers/settings/settings';
-// import ColorPicker from 'color-tool'
-import {ColorPickerService} from 'angular4-color-picker';
 
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -31,8 +28,7 @@ export class SettingsPage {
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
-    private settings: SettingsProvider,
-    private files: SettingsProvider){ 
+    private settings: SettingsProvider){ 
 
       this.paths = this.settings.getPaths()
       this.textFont = this.settings.getTextFont()
