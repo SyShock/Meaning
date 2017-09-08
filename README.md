@@ -59,6 +59,6 @@ npm run ebuild -- (-w for windows; -l for linux; -m for mac)
 
 ## Live development in electron
 ```
-ionic serve --no-browser
+ionic serve --nobrowser
 npm run electron -- test (optionally, -p <port>; -h <host address>)
 ```
