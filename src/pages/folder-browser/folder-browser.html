@@ -10,7 +10,7 @@
       {{folder}}
     </button>
   </ion-list>
-  <ion-fab right bottom>
+  <ion-fab right bottom class="bottom-right">
     <button ion-fab color="primary" (click)="select()">
       <ion-icon name="checkmark"></ion-icon>
     </button>
@@ -22,26 +22,29 @@
       <ion-col (click)="prevDir()" width-50>
           <ion-icon name="folder"></ion-icon>
           <ion-label>..</ion-label>
-      </ion-col>        
+      </ion-col>
       <ion-col *ngFor="let folder of folders" (click)="goTo(folder)" width-40>
         <ion-icon name="folder"></ion-icon>
         <ion-label>{{folder}}</ion-label>
       </ion-col>
       <ion-col *ngFor="let file of files" (click)="openFile(file)" width-40>
-        <ion-icon name="document"></ion-icon>          
+        <ion-icon name="document"></ion-icon>
         <ion-label>{{file}}</ion-label>
       </ion-col>
     </ion-row>
   </ion-grid>
 
-
-    <button ion-button clear class="top-left" (click)="goBack()">
-      <ion-icon name="arrow-left"></ion-icon>
-    </button>
-    <ion-item>{{path}}</ion-item>
-    <button ion-button clear class="top-right" (click)="doPrompt()">
-      <ion-icon name="add"></ion-icon>
-    </button>
+    <ion-buttons class="top-left">
+      <button ion-button clear  (click)="goBack()">
+        <ion-icon name="arrow-round-back"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-item id="address-bar">{{path}}</ion-item>
+    <ion-buttons class="top-right">
+      <button ion-button clear (click)="doPrompt()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
 
 
 

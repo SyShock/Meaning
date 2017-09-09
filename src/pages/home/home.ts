@@ -37,6 +37,8 @@ export class HomePage {
 
   previewMode: string;
 
+  textFocus: boolean;
+
   changed: boolean;
   parsedContent: string;
   constructor(
@@ -60,13 +62,19 @@ export class HomePage {
     this.headerFont = this.settings.getHeaderFont()
     this.textFont = this.settings.getTextFont()
     this.textColor = this.settings.getTextColor()
+    this.textFocus = this.settings.getTextFocus()
     console.log('text ',this.textColor);
     console.log('header ',this.headerColor);
+
+    console.log("das " + this.textFocus)
 
     this.onResize()
     this.initColor()
   }
 
+  ngAfterViewInit() {
+    this.render()
+  }
 
   wrapInDivs(r){
     let string: string
@@ -80,14 +88,26 @@ export class HomePage {
 
 
   render(){
-    //render with regex on input-page
+    //render using regex on edit-view
     // this.textElementFocused()
+    console.log('yesa');
+
 
     const elInput = this.input.nativeElement
     const elOutput = this.output.nativeElement
-    const currentHeight = elInput.scrollHeight > elOutput.scrollHeight ? elInput.scrollHeight : elOutput.scrollHeight
+    let currentHeight = elInput.scrollHeight > elOutput.scrollHeight ? elInput.scrollHeight : elOutput.scrollHeight
+    console.log(currentHeight);
+
+    currentHeight = currentHeight > document.body.clientHeight ? currentHeight : document.body.clientHeight
+    console.log(currentHeight);
 
     this.input.nativeElement.style = 'height: ' + currentHeight + 'px'
+
+    // a bit overboard but works for now
+    let temp:any = Array.from(document.querySelectorAll('ion-slides'))
+    for (let el of temp) el.style = 'height: ' + currentHeight + 'px'
+      console.log(temp);
+
 
     this.renderer.content = this.input.nativeElement.innerHTML;
     markjax(this.input.nativeElement.innerText, this.output.nativeElement, {'sanitize': false})
@@ -97,7 +117,7 @@ export class HomePage {
 
   switchViews(value?){
     if (!value){this.tempMode++; if(this.tempMode > 4) this.tempMode = 0}
-    
+
     switch (this.tempMode) {
       case 1:
         this.previewMode = 'narrowEditView'
@@ -113,7 +133,7 @@ export class HomePage {
         break;
       default:
         this.previewMode = ''
-      
+
         break;
     }
   }
@@ -124,12 +144,11 @@ export class HomePage {
   }
 
   textElementFocused(e) {
-    console.log(e);
-    let focusNode = window.getSelection().focusNode
-    let el = focusNode ? focusNode.parentElement : null
-    let prev = document.querySelector('.focused')
-    if (prev) prev.classList.remove('focused')
-    if (el) el.classList.add('focused')
+      let focusNode = window.getSelection().focusNode
+      let el = focusNode ? focusNode.parentElement : null
+      let prev = document.querySelector('.focused')
+      if (prev) prev.classList.remove('focused')
+      if (el) el.classList.add('focused')
   }
 
 
@@ -170,6 +189,7 @@ export class HomePage {
           text: 'Cancel',
           handler: data => {
             console.log('Cancel clicked');
+            this.events.publish('to-save-file-canceled')
           }
         },
         {

@@ -54,11 +54,23 @@ Uses Ionic 3 framework and electron.
 git clone https://github.com/syshock/meaning.git
 cd meaning
 npm install
+ionic serve --nobrowser
 npm run ebuild -- (-w for windows; -l for linux; -m for mac)
 ```
 
 ## Live development in electron
 ```
-ionic serve --nobrowser
+ionic serve --nobrowser -d
 npm run electron -- test (optionally, -p <port>; -h <host address>)
 ```
+
+# Live development for mobile
+ADB daemon or the equivalent for Apple devices must be running.
+And the mobile device must be hooked up.
+Otherwise instead of `run`, use `emulate`.
+```
+ionic cordova plaform remove <platform - ios or android> //this is sometimes required
+ionic cordova plaform add <platform - ios or android>
+ionic cordova run <platform> --aot --livereload 
+```
+Then debug from `chrome://inspector/`

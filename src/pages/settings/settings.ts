@@ -28,15 +28,18 @@ export class SettingsPage {
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
-    private settings: SettingsProvider){ 
+    private settings: SettingsProvider){
 
       this.paths = this.settings.getPaths()
       this.textFont = this.settings.getTextFont()
       this.textColor = this.settings.getTextColor()
       this.headerColor = this.settings.getHeaderColor()
-      this.textFont = this.settings.getTextFont()
+
       this.textSize = this.settings.getTextSize()
+      this.textFocus = this.settings.getTextFocus()
       this.headerFont = this.settings.getHeaderFont()
+
+
       this.theme = this.settings.getActiveTheme()
 
       this.headerFontOptions = [
@@ -50,7 +53,7 @@ export class SettingsPage {
         { name: 'Monospace', value: 'monospace' },
         { name: 'Cloister Black', value: 'CloisterBlack' }
       ]
-  
+
       this.themes = [
         { name: 'Light', value: 'light-theme' },
         { name: 'Night', value: 'dark-theme' },
@@ -75,7 +78,7 @@ export class SettingsPage {
   //     space: 'rgb',
   //   });
   //   console.log(picker);
-    
+
 
   // el.nativeElement.appendChild(picker.element);
   }
@@ -90,13 +93,13 @@ export class SettingsPage {
 
   removeProjectPath(name){
     this.settings.removePath(name)
-    this.paths = this.settings.getPaths()    
+    this.paths = this.settings.getPaths()
   }
 
   doPromptSync(){
 
   }
-  
+
   goBack(){
     this.navCtrl.pop()
   }
@@ -110,22 +113,24 @@ export class SettingsPage {
   }
 
   onTextSizeChange(value){
-    this.settings.setTextSize(value)    
+    this.settings.setTextSize(value)
   }
 
   onFontSizeChange(value){
-    this.settings.setTextSize(value)        
+    this.settings.setTextSize(value)
   }
 
   onHeaderColorChange(value){
-    this.settings.setHeaderColor(value)            
+    this.settings.setHeaderColor(value)
   }
 
   onTextColorChange(value){
-    this.settings.setTextColor(value)            
+    this.settings.setTextColor(value)
   }
 
-  onTextfocusChange(value){
-    this.settings.setTextColor(value)            
+  onTextFocusChange(value){
+    console.log('giving ', value);
+
+    this.settings.setTextFocus(value)
   }
 }

@@ -7,7 +7,8 @@ interface IConfig{
   headerColor: string,
   textFont: string,
   textColor: string,
-  textSize: string
+  textSize: string,
+  textFocus: boolean
 }
 
 
@@ -25,7 +26,8 @@ export class SettingsProvider {
       headerColor: '',
       textFont: '',
       textColor: '',
-      textSize: 'normal'
+      textSize: 'normal',
+      textFocus: true
     }
     config.paths.pop()
     this.initConfig(config)
@@ -73,8 +75,8 @@ export class SettingsProvider {
 
   getTextColor(){
     return this.config.textColor
-  } 
- 
+  }
+
   getHeaderColor(){
     return this.config.headerColor
   }
@@ -91,12 +93,20 @@ export class SettingsProvider {
     const paths = this.config.paths
     paths.push({'name': name, 'url': pathUrl})
   }
-  
+
   removePath(name){
     const paths = this.config.paths
     const index = paths.findIndex( (el) => el.name === name)
     console.log(paths, index);
-    
+
     paths.splice(index, 1)
+  }
+
+  setTextFocus(value: boolean){
+    this.config.textFocus = value
+  }
+
+  getTextFocus(){
+    return this.config.textFocus
   }
 }

@@ -23,6 +23,7 @@ export class MyApp {
   files: Array<string>;
   filesBackUp: Array<string>;
   searchWords: string;
+  showedAlert: boolean = false;
 
   main:Array<{title: string, do: Function}>
 
@@ -60,16 +61,41 @@ export class MyApp {
       this.splashScreen.hide();
 
       this.storage.get('config').then((res) => {
-        if(res) this.settings.initConfig(JSON.parse(res))      
+        if(res) this.settings.initConfig(JSON.parse(res))
 
       })
-      if(this.platform.is('electron'))
+
+      if(this.platform.is('electron')){
         window.addEventListener('beforeunload', () => {
           this.onExit();
         });
-      this.platform.registerBackButtonAction(() => {
-        this.onExit()                
-      });
+      }
+      if(this.platform.is('cordova')){
+
+        this.events.subscribe('file-saved', () => this.showedAlert = false)
+        this.events.subscribe('to-save-file-canceled', () => this.showedAlert = false)
+
+        const _navigator:any = navigator
+        _navigator.app.overrideButton("menubutton", true);
+        document.addEventListener('menubutton', (e) => {
+          this.menu.toggle()
+        }, false)
+
+
+        this.platform.registerBackButtonAction((e) =>{
+          if (this.nav.length() == 1) {
+            if (!this.showedAlert) {
+              console.log('prompting')
+              this.showedAlert = true;
+              this.events.publish('to-save-file')
+            } else {
+              this.platform.exitApp()
+            }
+          } else this.nav.pop()
+        });
+      }
+
+
       this.events.subscribe('folder-selected', ()=>{
         this.loadFiles();
       })
@@ -83,7 +109,7 @@ export class MyApp {
     this.files = this.filesBackUp.filter((el)=>{
       return el.match(this.searchWords)
     })
-    if (!this.searchWords) this.files = this.filesBackUp 
+    if (!this.searchWords) this.files = this.filesBackUp
   }
 
   openPage(page) {
@@ -99,7 +125,7 @@ export class MyApp {
     this.files = await this.extFiles.listFiles(['.md','.txt'])
     this.filesBackUp = this.files.concat()
     console.log('Backing up: ' ,this.filesBackUp);
-    
+
   }
 
   async loadProjectFiles(pathUrl: string){
@@ -109,7 +135,7 @@ export class MyApp {
     this.extFiles.goToDir(pathUrl.replace(this.extFiles.base[0], ''))
     this.files = await this.extFiles.listFiles()
     this.filesBackUp = this.files.concat()
-    
+
   }
 
   async deleteFile(r){
@@ -144,11 +170,11 @@ export class MyApp {
     // let profileModal = this.modalCtrl.create(AboutComponent);
     // profileModal.present();
   }
-  
+
   showMenu(){
 
   }
   showFiles(){
-    
+
   }
 }

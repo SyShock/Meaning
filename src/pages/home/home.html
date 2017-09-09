@@ -1,16 +1,16 @@
 <ion-content fullscreen (window:resize)="onResize($event)"  >
 
   <!-- <templates #templates></templates> -->
-  
+
   <span *ngIf="!smallScreen" id="wide" [class]="previewMode">
-    <span #input id="first-screen" class="notFocused"  contenteditable="true" (input)="render()"><div>Content</div></span>
+    <span #input id="first-screen" [class.notFocused]="textFocus"  contenteditable="true" (input)="render()"><div>Content</div></span>
     <span #output id="second-screen" [style.fontFamily]="textFont" [style.color]="textColor"></span>
   </span>
 
   <span *ngIf="smallScreen" id="small">
     <ion-slides>
       <ion-slide>
-        <span #input id="first-screen" contenteditable="true" (input)="render()">
+        <span #input id="first-screen" [class.notFocused]="textFocus" contenteditable="true" (input)="render()">
           <div>Content</div>
         </span>
       </ion-slide>
@@ -20,7 +20,7 @@
     </ion-slides>
   </span>
 
-  <ion-buttons class="top-left">    
+  <ion-buttons class="top-left">
     <button ion-button clear menuToggle>
       <ion-icon color='black' name="menu"></ion-icon>
     </button>
@@ -38,18 +38,19 @@
       <ion-icon color='black' name="redo"></ion-icon>
     </button>
 
-          
+
   </ion-buttons>
 
-  <ion-buttons class="bottom-right">
+<ion-buttons *ngIf='!smallScreen' class="bottom-right">
+
     <button ion-button clear (click)="switchViews()">
       <ion-icon color='black' name="eye"></ion-icon>
     </button>
   </ion-buttons>
 
   <div *ngIf="wordCounter" id="status-bar">Word Count: {{wordCount}}
-  
+
   </div>
-  
+
 
 </ion-content>

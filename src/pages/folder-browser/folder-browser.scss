@@ -6,12 +6,17 @@ page-folder-browser {
     .top-right{
         position:fixed; top:0; right:0;
     }
-    ion-item{
+    .bottom-right{
+        position:fixed;
+
+    }
+    #address-bar{
+        position: absolute;
         position: fixed;
         top: 0;
     }
     ion-col{
-        
+
         ion-icon {
             display: inline-block;
             font-size: 5.2em;
