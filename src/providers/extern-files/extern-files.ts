@@ -4,30 +4,29 @@ import { Entry as IEntry, FileEntry, IFile, IWriteOptions } from '@ionic-native/
 
 @Injectable()
 export class ExternFilesProvider {
-
-  fileCalls: any;
+  private fileCalls: any;
   base: Array<string> = [];
+  _base: string;
   selectedDirPath: string;
 
-  errorMessenger: any
-  successMessenger: any
+  private _errorMessenger: any
+  private _successMessenger: any
 
   openedFile: string;
 
 
   constructor(private platform: Platform,
-     private events: Events) {
+    private events: Events) {
     console.log('Hello ExternFilesProvider Provider');
-
     this.checkPlatform()
   }
 
   setErrorMessender(dep){
-    this.errorMessenger = dep
+    this._errorMessenger = dep
   }
 
   setSuccessMessenger(dep){
-    this.successMessenger = dep
+    this._successMessenger = dep
   }
 
 
@@ -41,13 +40,14 @@ export class ExternFilesProvider {
     console.log('Setting up for electron.');
 
     const process = require('electron').remote.require('process')
-    const home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE 
-    console.log(home);
-    
+    const home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+
     this.fileCalls =  require('electron').remote.require('fs')
     this.base = [home];
+    this._base = home;
     this.listDirs = this._electronListDirs
     this.listFiles = this._electronListFiles
+    this.listFilesAsync = this._electronListFilesAsync
     this.makeDir = this._electronMakeDir
     this.openFile = this._electronRead
     this.saveFile = this._electronWrite
@@ -61,6 +61,7 @@ export class ExternFilesProvider {
     const native = require('@ionic-native/file')
     this.fileCalls = new native.File()
     this.base = ['file:///sdcard'];
+    this._base = 'file:///sdcard'
     this.listDirs = this._cordovaListDirs
     this.listFiles = this._cordovaListFiles
     this.makeDir = this._cordovaMakeDir
@@ -86,7 +87,7 @@ export class ExternFilesProvider {
     let baseURL = this.base.join('/')
 
     this.onAfterOpenFile(fileName)
-    
+
     return this.fileCalls.readFileSync(baseURL + '/' + fileName, 'utf-8')
   }
 
@@ -97,32 +98,57 @@ export class ExternFilesProvider {
      return res.filter((en) => {return this.fileCalls.statSync(baseURL + '/' + en).isDirectory()})
   }
 
-  private _electronListFiles() {
-     let baseURL = this.base.join('/')
-     console.log(baseURL)
-     let res: Array<string> = this.fileCalls.readdirSync(baseURL)
-     return res.filter((en) => { return this.fileCalls.statSync(baseURL + '/' + en).isFile() })
-   }
+  private _electronListFiles( suffixes: Array<string> ) {
+    let baseURL = this.base[0]
+    let res: Array<string> = this.fileCalls.readdirSync(baseURL)
+    let ret = res.filter((en) => { return this.fileCalls.statSync(baseURL + '/' + en).isFile() })
+    let _ret = []
+  //  for (let suffix of suffixes) {
+  //    _ret = _ret.concat(ret.filter((el) => { return el.includes(suffix) }))
+  //  }
+    ret.forEach((el)=>{
+      for (let suffix of suffixes){
+        if(el.includes(suffix)) _ret.push(el)
+      }
+    })
+    return _ret
+  }
 
-   private _electronGetMetadata(fileNames){
+  private _electronListFilesAsync(suffixes: Array<string>, callback: Function) {
+    let baseURL = this.base[0]
+    this.fileCalls.readdir(baseURL, (err, res) => {
+      res.forEach(el => {
+        this.fileCalls.stat(baseURL + '/' + el, (err, ret) =>  {
+          if (ret.isFile()) {
+            for (let suffix of suffixes){
+              if (el.includes(suffix)) callback(el)
+            }
+          }
+        })
+      });
+    })
+  }
+
+  private _electronGetMetadata(fileNames){
     let baseURL = this.base.join('/')
     console.log(baseURL)
-    return fileNames.map((en) => { 
+    return fileNames.map((en) => {
       let w = this.fileCalls.statSync(baseURL + '/' + en);
       return {
         time: w.mtime.getTime(),
-        name: en }
-      })
-   }
+        name: en
+      }
+    })
+  }
 
-   private _electronMakeDir(dirName){
+  private _electronMakeDir(dirName){
     let baseURL = this.base.join('/')
     this.fileCalls.mkdirSync(baseURL, dirName)
   }
 
   private _electronDeleteFile(fileName){
     let baseURL = this.base.join('/')
-    this.fileCalls.unlinkSync(baseURL+ '/' + fileName)    
+    this.fileCalls.unlinkSync(baseURL+ '/' + fileName)
   }
 
   private _electronMoveFile(){
@@ -154,7 +180,7 @@ export class ExternFilesProvider {
   private async _cordovaRead(fileName){
     let baseURL = this.base.join('/')
     console.log(fileName);
-    
+
     let res = await this.fileCalls.readAsText(baseURL, fileName)
     console.log(res);
 
@@ -164,7 +190,6 @@ export class ExternFilesProvider {
   }
 
   private async _cordovaListDirs(){
-    // let dirEntry = await this.file.resolveLocalFilesystemUrl('/storage');
     let baseURL = this.base.join('/')
     console.log('ULR: ' ,baseURL)
     let res:Array<IEntry> = await this.fileCalls.listDir(baseURL, '.')
@@ -173,26 +198,28 @@ export class ExternFilesProvider {
     return ret
   }
 
-  private async _cordovaListFiles() {
-    // let dirEntry = await this.file.resolveLocalFilesystemUrl('/storage');
+  private async _cordovaListFiles(suffixes?: Array<string>) {
     let baseURL = this.base.join('/')
     console.log('ULR: ', baseURL)
     let res: Array<IEntry> = await this.fileCalls.listDir(baseURL, '.');
     let ret = res.filter((en) => { return en.isFile }).map((en) => {return en.name})
-    return ret
+    let _ret = []
+    for (let suffix of suffixes){
+      _ret.concat(ret.filter((el)=> {return el.includes(suffix)}))
+    }
+    return _ret
   }
 
   private async _cordovaGetMetadata(fileNames){
     let baseURL = this.base.join('/')
-    
-    // let fileNames: Array<IEntry> = await this.file.listDir(baseURL, '.'); 
+
     let res: Array<IEntry> = await this.fileCalls.listDir(baseURL, '.');
     let ret = res.filter((en) => { return en.isFile })
 
     let promises = []
     ret.forEach((el)=>{
       promises.push(new Promise((resolve, reject) => {
-        el.getMetadata((ez) => 
+        el.getMetadata((ez) =>
         resolve ({time: ez.modificationTime.getTime(), name: el.name}),
         (e) => reject(e))
       })
@@ -226,16 +253,21 @@ export class ExternFilesProvider {
    */
 
   listDirs(): any {}
-  listFiles(suffixes?: Array<string>): any{}
+  listFiles(suffixes: Array<string>): any {}
+  listFilesAsync(suffixes: Array<string>, callback: Function): any {}
+
+  jumpToDir(path){
+    this.base[0] = path
+    return this.base[0]
+  }
   goToDir(dirName) {
-    this.base.push(dirName);
-    return this.base.join('/')
+    this.base[0] = this.base[0] + '/' + dirName + '/'
+    return this.base[0]
   }
   prevDir() {
-    if(this.base.length > 1){
-      this.base.pop();
-    }
-    return this.base.join('/')
+    if(this.base[0] !== this._base || '/')
+    this.base[0] = this.base[0].replace(/\/([^\/]+)\/?$/g, '')
+    return this.base[0]
   }
   selectDir(){
     this.selectedDirPath = this.base.join('/')
@@ -247,14 +279,14 @@ export class ExternFilesProvider {
   saveFile(fileName, data){}
   deleteFile(fileName){}
   getMetadata(fileName): any{}
-  moveFile(){}
-  renameFile(){}
+  moveFile(fileName, pathUrl){}
+  renameFile(fileName){}
 
   clearPath(){
-    this.base.splice(0, this.base.length)
+    this.base[0] = this._base
   }
   onAfterSaveFile(){
-    this.events.publish('file-saved')    
+    this.events.publish('file-saved')
   }
 
   onAfterOpenFile(fileName: string){

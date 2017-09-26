@@ -20,6 +20,16 @@
     background: transparent; /* make scrollbar transparent */
 }
 
+#draggable {
+  -webkit-app-region: drag;
+  width: 100%;
+  height: 20px;
+  top: 0;
+  left: 0;
+  display: static;
+}
+
+
 h3{
     cursor: pointer;
 }

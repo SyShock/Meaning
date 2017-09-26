@@ -61,11 +61,11 @@ export class FolderBrowserPage {
 
   async select(){
     this.extFiles.selectDir()
-    let r = await this.extFiles.listFiles()
-    let dirName = this.path.match(/\/\w+$/g)
-    this.settings.addPath(dirName, this.path)     
+    let r = await this.extFiles.listFiles(['.md','.txt'])
+    let dirName = this.path.match(/\/\w+\/$/g)
+    this.settings.addPath(dirName, this.path)
     this.getMetadata(r)
-    this.navCtrl.setRoot(HomePage)    
+    this.navCtrl.setRoot(HomePage)
     this.events.publish('menu-toggle')
   }
 
@@ -93,7 +93,7 @@ export class FolderBrowserPage {
     let a = await this.extFiles.getMetadata(fileNames)
     console.log(
       Math.max.apply(Math, a.map((obj) => {return obj.time;}))
-    );
+    );3
   }
 
   doPrompt() {
@@ -122,14 +122,14 @@ export class FolderBrowserPage {
     prompt.present();
     prompt.onDidDismiss((r)=>{
       this.makeDir(r.dirName)
-    })    
+    })
   }
 
 
   onKeyUp(e: KeyboardEvent){
     console.log(e)
     if(e.key === 'Escape') this.navCtrl.pop()
-    
+
   }
 
   goBack(){
@@ -137,12 +137,12 @@ export class FolderBrowserPage {
   }
 
   search(){
-    console.log(this.foldersBackup)    
+    console.log(this.foldersBackup)
     this.folders = this.foldersBackup.filter((el)=>{
       return el.search(this.searchWords) > 0
     })
     console.log(this.folders)
-    if (this.folders.length === 0) this.folders = this.foldersBackup 
+    if (this.folders.length === 0) this.folders = this.foldersBackup
   }
 
 }

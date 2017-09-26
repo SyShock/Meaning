@@ -65,7 +65,7 @@ page-home {
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 10px;
         grid-auto-rows: minmax(100px, auto);
-        word-break:break-all;
+        word-break:normal;
         height: 100%;
         overflow-y: scroll;
 
@@ -77,7 +77,7 @@ page-home {
             min-height: 100%;
             height: max-content;
             background-color: #eee !important;
-            word-break:break-all;
+            word-break:normal;
             grid-column: 1 / 1;
             grid-row: 1;
             padding-top:40px;
@@ -87,7 +87,7 @@ page-home {
     #second-screen{
         height: 100%;
 
-        word-break:break-all;
+        word-break:normal;
         grid-column: 2 / 2;
         grid-row: 1;
         padding-top:40px;
@@ -105,10 +105,14 @@ page-home {
             background-color: #f6f8fa;
 
         }
-        blockquote  p {
+        blockquote {
             padding: 0 1em;
-            color: #6a737d;
             border-left: 0.25em solid #dfe2e5;
+            *{
+            color: #6a737d;
+
+
+            }
         }
         pre{
                 padding-left: 16px;
@@ -116,7 +120,7 @@ page-home {
                 padding-bottom: 16px;
                 margin-right: 30px;
                 overflow-wrap: break-word;
-                word-break: break-all;
+                word-break: normal;
                 font-size: 85%;
                 line-height: 1.45;
                 background-color: #f6f8fa;
@@ -185,6 +189,7 @@ page-home {
         position: absolute;
         display: unset;
     }
+
 
 }
 

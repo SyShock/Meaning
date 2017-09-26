@@ -2,8 +2,17 @@ import { SettingsProvider } from './../../providers/settings/settings';
 import { TemplatesComponent } from './../../components/templates/templates';
 import { MarkjaxProvider } from './../../providers/markjax/markjax';
 import { Component, ViewChild } from '@angular/core';
-import { NavController, IonicPage, Events, AlertController, ToastController, NavParams } from 'ionic-angular';
+import {
+    AlertController,
+    Events,
+    IonicPage,
+    NavController,
+    NavParams,
+    PopoverController,
+    ToastController,
+} from 'ionic-angular';
 import markjax from 'markjax';
+import { PopUp } from './home-view-popup'
 import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
 
 @IonicPage()
@@ -18,6 +27,7 @@ import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
 export class HomePage {
 
   @ViewChild('input') input: any;
+  @ViewChild(PopUp) popup: PopUp;
   @ViewChild('output') output: any;
   @ViewChild('templates') templates: TemplatesComponent
   smallScreen: boolean;
@@ -39,6 +49,8 @@ export class HomePage {
 
   textFocus: boolean;
 
+  searchText: string;
+
   changed: boolean;
   parsedContent: string;
   constructor(
@@ -49,11 +61,14 @@ export class HomePage {
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     public renderer: MarkjaxProvider,
-    private settings: SettingsProvider) {
+    private settings: SettingsProvider,
+    private popoverCtrl: PopoverController) {
+    this.events.unsubscribe('file-opened')
+      this.events.unsubscribe('to-save-file')
+      this.events.unsubscribe('to-save-file-as')
       this.events.subscribe('file-opened', (r) => this.onFileOpened(r))
       this.events.subscribe('to-save-file', () => this._saveFile())
       this.events.subscribe('to-save-file-as', () => this.doPrompt())
-
   }
 
   ionViewDidEnter(){
@@ -63,22 +78,15 @@ export class HomePage {
     this.textFont = this.settings.getTextFont()
     this.textColor = this.settings.getTextColor()
     this.textFocus = this.settings.getTextFocus()
-    console.log('text ',this.textColor);
-    console.log('header ',this.headerColor);
-
-    console.log("das " + this.textFocus)
 
     this.onResize()
     this.initColor()
-  }
-
-  ngAfterViewInit() {
     this.render()
   }
 
   wrapInDivs(r){
     let string: string
-    string = '<div>' + r.replace(/\n/g, '</div><div>')
+    string = '<div>' + r.replace(/\n/g, '<br></div><div>')
     return string
   }
 
@@ -90,8 +98,6 @@ export class HomePage {
   render(){
     //render using regex on edit-view
     // this.textElementFocused()
-    console.log('yesa');
-
 
     const elInput = this.input.nativeElement
     const elOutput = this.output.nativeElement
@@ -115,10 +121,20 @@ export class HomePage {
     this.initColor()
   }
 
-  switchViews(value?){
-    if (!value){this.tempMode++; if(this.tempMode > 4) this.tempMode = 0}
 
-    switch (this.tempMode) {
+  showPopover(ev) {
+    let popover = this.popoverCtrl.create(PopUp,
+      {callback: this.switchViews.bind(this)},
+      {cssClass:this.settings.getActiveTheme()
+    });
+
+    popover.present({ direction: 'up', ev: ev})
+  }
+
+
+  switchViews(value?){
+
+    switch (value) {
       case 1:
         this.previewMode = 'narrowEditView'
         break;
@@ -133,10 +149,10 @@ export class HomePage {
         break;
       default:
         this.previewMode = ''
-
         break;
     }
   }
+
 
   saveFile(r){ //requires dialogue
     this.files.saveFile(r + '.md', this.input.nativeElement.innerText)
@@ -159,7 +175,6 @@ export class HomePage {
       duration: 3000
     });
 
-    // toast.onDidDismiss(this.dismissHandler);
     toast.present();
   }
 
@@ -198,7 +213,8 @@ export class HomePage {
             console.log('Saved clicked');
           }
         }
-      ]
+      ],
+      cssClass: this.settings.getActiveTheme()
     });
     prompt.present();
     prompt.onDidDismiss((r) => {
@@ -239,7 +255,23 @@ export class HomePage {
     if(e.ctrlKey){
       if (e.key === 'S') this.doPrompt()
       else if(e.key === 's') this._saveFile()
+      if (e.key === 'f') this.findText()
     }
+  }
+
+  findText(){
+
+  }
+
+  onTextInput(){
+    const input:HTMLElement = this.input.nativeElement
+    const regex = new RegExp(`/(${this.searchText})+/g`)
+    const array = input.innerHTML.match(regex)
+  }
+
+  scrollTo(element:string) {
+    let yOffset = document.getElementById(element).offsetTop;
+    // this.content.scrollTo(0, yOffset, 4000)
   }
 
   onResize(e?){

@@ -46,22 +46,22 @@
   <ion-item>
     <ion-label>Header Font</ion-label>
     <ion-select [(ngModel)]="headerFont" interface="popover" (ionChange)="onHeaderFontChange(headerFont)">
-      <ion-option *ngFor="let opt of headerFontOptions" [value]="opt.value">{{opt.name}}</ion-option>
+      <ion-option *ngFor="let opt of headerFontOptions" [value]="opt.value" [style.fontfamily]="opt.value">{{opt.name}}</ion-option>
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Text Font</ion-label>
     <ion-select [(ngModel)]="textFont" interface="popover" (ionChange)="onTextFontChange(textFont)">
-      <ion-option *ngFor="let opt of textFontOptions" [value]="opt.value">{{opt.name}}</ion-option>
+      <ion-option *ngFor="let opt of textFontOptions" [value]="opt.value" style="font-family: {{opt.value}}">{{opt.name}}</ion-option>
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Font Size</ion-label>
     <ion-select [(ngModel)]="textSize" interface="popover" (ionChange)="onFontSizeChange(textSize)">
-      <ion-option *ngFor="let opt of fontSizeList" [value]="opt.value">{{opt.name}}</ion-option>
+      <ion-option *ngFor="let opt of fontSizeList" [value]="opt.value" style="font-size: {{opt.value}}">{{opt.name}}</ion-option>
     </ion-select>
   </ion-item>
-  <input ion-item [value]="'Header Color: ' + headerColor" [(colorPicker)]="headerColor" (colorPickerChange)="onHeaderColorChange(headerColor)" [cpPosition]="'top'" [style.color]="headerColor"/>
+  <input ion-item [style.color]="headerColor" [value]="'Header Color: ' + headerColor" [(colorPicker)]="headerColor" (colorPickerChange)="onHeaderColorChange(headerColor)" [cpPosition]="'top'" [style.color]="headerColor"/>
 
-    <input ion-item [value]="'Text Color: ' + textColor" [(colorPicker)]="textColor" (colorPickerChange)="onTextColorChange(textColor)" [cpPosition]="'top'" [style.color]="textColor"/>
+    <input ion-item [style.color]="textColor" [value]="'Text Color: ' + textColor" [(colorPicker)]="textColor" (colorPickerChange)="onTextColorChange(textColor)" [cpPosition]="'top'" [style.color]="textColor"/>
 </ion-content>

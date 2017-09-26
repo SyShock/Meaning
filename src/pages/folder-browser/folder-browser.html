@@ -1,3 +1,17 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-label>{{path}}</ion-label>
+
+      <ion-buttons end>
+        <button ion-button clear (click)="doPrompt()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+      </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
 <ion-content fullscreen padding>
   <!-- <ion-searchbar (input)="search()" [(ngModel)]="searchWords"></ion-searchbar> -->
   <span *ngIf="!fileSelect">
@@ -33,18 +47,14 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
+<!--
     <ion-buttons class="top-left">
       <button ion-button clear  (click)="goBack()">
         <ion-icon name="arrow-round-back"></ion-icon>
       </button>
-    </ion-buttons>
-    <ion-item id="address-bar">{{path}}</ion-item>
-    <ion-buttons class="top-right">
-      <button ion-button clear (click)="doPrompt()">
-        <ion-icon name="add"></ion-icon>
-      </button>
-    </ion-buttons>
+    </ion-buttons> -->
+    <!-- <ion-item id="address-bar">{{path}}</ion-item> -->
+
 
 
 

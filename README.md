@@ -32,22 +32,33 @@ Uses Ionic 3 framework and electron.
 
 
 #### To Do:
-- [] spell-check
+- [ ] spell-check
 - [x] mobile view
-- [] fixed grid view in file explorer
-- [] tabbed settings
-- [] pdf export
-- [] html export
-- [] find word in edit mode
-- [] find file when side-tab is opened
+- [ ] fixed grid view in file explorer
+- [ ] tabbed settings
+- [ ] pdf export
+- [ ] html export
+- [ ] find word in edit mode
+- [ ] find file when side-tab is opened
 - [x] multiple preview modes
-- [] github markdown hotkeys
-- [] optimize and clean up code
-- [] typewritter sound-effect
-- [] split edit view in different components
+- [ ] github markdown hotkeys
+- [ ] optimize and clean up code
+- [ ] typewritter sound-effect
+- [ ] split edit view in different components
 - [x] add color-picker
-- [] add more font styles
-- [] add letter spacing
+- [ ] add more font styles
+- [ ] add letter spacing
+- [?] fix bug with 'save as'
+- [ ] add folder path for 'save as'
+- [x] fix new lines being removed while saving 
+- [ ] backup file if app stops obruptly 
+- [ ] app icon 
+- [ ] enable window dragging from the top part 
+- [ ] fade-out when on top 
+- [ ] on window you cannot go back when selecting a bookmark 
+- [ ] expand and contract animations for the side-menu
+- [ ] add help and cheat-sheets: http://reu.dimacs.rutgers.edu/Symbols.pdf , https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+
 
 ## Building from source
 ```
@@ -64,7 +75,7 @@ ionic serve --nobrowser -d
 npm run electron -- test (optionally, -p <port>; -h <host address>)
 ```
 
-# Live development for mobile
+## Live development for mobile
 ADB daemon or the equivalent for Apple devices must be running.
 And the mobile device must be hooked up.
 Otherwise instead of `run`, use `emulate`.

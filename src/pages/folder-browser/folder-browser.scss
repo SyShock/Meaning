@@ -11,12 +11,13 @@ page-folder-browser {
 
     }
     #address-bar{
-        position: absolute;
-        position: fixed;
-        top: 0;
+        position: fixed; top: 0; left: 0;
+        *{
+          margin-left: 10px;
+        }
     }
-    ion-col{
 
+    ion-col{
         ion-icon {
             display: inline-block;
             font-size: 5.2em;

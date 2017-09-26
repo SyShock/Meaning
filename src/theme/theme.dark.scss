@@ -76,11 +76,11 @@
       background-color: #090f2f;
       color: white;
     }
-   
+
     .toolbar-title {
       color: white;
     }
-   
+
     .header .toolbar-background {
       border-color: black;
       background-color: black;
@@ -101,25 +101,27 @@
       box-shadow: none;
       opacity: 1;
     }
-    
+
 
   page-home #wide #second-screen{
 
-  code{
-      background-color: #111;
-          
+    code{
+        background-color: #111;
+    }
+    blockquote {
+        color: white;
+        border-left: 0.25em solid #444;
+    }
+    pre{
+            background-color: #111;
+            color: white;
+    }
   }
-  blockquote  p {
-      color: white;
-      border-left: 0.25em solid #444;
+  hr {
+    background-color: white !important;
   }
-  pre{
-          background-color: #111;
-          color: white;
-  }
-}
 
-about{
- @extend ion-item
-}
+  about{
+    @extend ion-item
   }
+}

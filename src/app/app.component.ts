@@ -1,6 +1,6 @@
 import { Storage } from '@ionic/storage';
 import { SettingsProvider } from './../providers/settings/settings';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Nav, Platform, Events, MenuToggle } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -17,11 +17,12 @@ import { SettingsPage } from './../pages/settings/settings';
 })
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
+  @ViewChild('searchbar') searchbar: any;
 
   rootPage: any = HomePage;
 
-  files: Array<string>;
-  filesBackUp: Array<string>;
+  files: Array<string> = [];
+  filesBackUp: Array<string> = [];
   searchWords: string;
   showedAlert: boolean = false;
 
@@ -36,7 +37,8 @@ export class MyApp {
      private events: Events,
      private menu: MenuToggle,
      public settings: SettingsProvider,
-     private storage: Storage
+     private storage: Storage,
+     private renderer: Renderer2
    ) {
     this.initializeApp();
 
@@ -83,24 +85,29 @@ export class MyApp {
 
 
         this.platform.registerBackButtonAction((e) =>{
-          if (this.nav.length() == 1) {
+          if (this.nav.length() === 1) {
+
             if (!this.showedAlert) {
               console.log('prompting')
-              this.showedAlert = true;
               this.events.publish('to-save-file')
             } else {
               this.platform.exitApp()
             }
           } else this.nav.pop()
+          setTimeout(1000, ()=> this.showedAlert = false)
+          this.showedAlert = true;
         });
       }
 
 
       this.events.subscribe('folder-selected', ()=>{
-        this.loadFiles();
+        this.loadFiles()
       })
       this.events.subscribe('menu-toggle', ()=>{
         this.menu.toggle()
+        setTimeout(() => {
+          this.searchbar.setFocus();
+        }, 150);
       })
     });
   }
@@ -122,9 +129,12 @@ export class MyApp {
   }
 
   async loadFiles(){
-    this.files = await this.extFiles.listFiles(['.md','.txt'])
-    this.filesBackUp = this.files.concat()
-    console.log('Backing up: ' ,this.filesBackUp);
+    this.extFiles.listFilesAsync(['.md', '.txt'], (el) => {
+      console.log(el);
+
+      this.files = this.files.concat(el)
+      this.filesBackUp = this.files.concat()
+    })
 
   }
 
@@ -132,10 +142,19 @@ export class MyApp {
     console.log(pathUrl)
     console.log(this.extFiles.base[0]);
     this.extFiles.clearPath()
-    this.extFiles.goToDir(pathUrl.replace(this.extFiles.base[0], ''))
-    this.files = await this.extFiles.listFiles()
+    this.extFiles.jumpToDir(pathUrl)
+    this.files.splice(0, this.files.length)
+    this.files = await this.extFiles.listFiles(['.md', '.txt'])
     this.filesBackUp = this.files.concat()
+    // this.extFiles.listFilesAsync(['.md', '.txt'], this._testLoad.bind(this))
 
+  }
+
+  _testLoad(el){
+    console.log(el);
+
+    this.files = this.files.concat(el)
+    this.filesBackUp = this.files.concat()
   }
 
   async deleteFile(r){

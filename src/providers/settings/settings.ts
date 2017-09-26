@@ -92,6 +92,7 @@ export class SettingsProvider {
   addPath(name, pathUrl){
     const paths = this.config.paths
     paths.push({'name': name, 'url': pathUrl})
+    console.log(name,pathUrl)
   }
 
   removePath(name){

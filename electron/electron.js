@@ -1,17 +1,14 @@
 'use strict';
+
 const electron = require('electron');
-const {
-    app } = electron;
-const {
-    BrowserWindow
-} = electron;
+const { app } = electron;
+const { BrowserWindow } = electron;
+
+const { remote, Menu } = electron;
 
 const path = require('path')
 
 let win;
-
-
-
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
@@ -41,6 +38,33 @@ function createWindow() {
     win.loadURL(url);
 
     win.setMenuBarVisibility(false)
+
+    // const selectionMenu = Menu.buildFromTemplate([
+    //   { role: 'copy' },
+    //   { type: 'separator' },
+    //   { role: 'selectall' },
+    // ])
+
+    // const inputMenu = Menu.buildFromTemplate([
+    //   { role: 'undo' },
+    //   { role: 'redo' },
+    //   { type: 'separator' },
+    //   { role: 'cut' },
+    //   { role: 'copy' },
+    //   { role: 'paste' },
+    //   { type: 'separator' },
+    //   { role: 'selectall' },
+    // ])
+
+    // window.webContents.on('context-menu', (e, props) => {
+    //   const { selectionText, isEditable } = props;
+    //   if (isEditable) {
+    //     inputMenu.popup(window);
+    //   } else if (selectionText && selectionText.trim() !== '') {
+    //     selectionMenu.popup(window);
+    //   4}
+    // })
+
   //   win.webContents.openDevTools()
 
 

@@ -2,7 +2,7 @@
   <ion-header>
     <ion-toolbar>
       <!-- <ion-title center >MEANING</ion-title> -->
-      <ion-searchbar id="title" [(ngModel)]="searchWords" (ionFocus)="showFiles()"  (ionBlur)="showMenu()" (input)="searchFiles()" no-icon placeholder="M E A N I N G"></ion-searchbar>
+      <ion-searchbar id="title" #searchbar [(ngModel)]="searchWords" (ionFocus)="showFiles()"  (ionBlur)="showMenu()" (input)="searchFiles()" no-icon placeholder="M E A N I N G"></ion-searchbar>
     </ion-toolbar>
   </ion-header>
 
@@ -13,7 +13,7 @@
           {{p.title}}
         </button>
       </expandable>
-      <hr>      
+      <hr>
       <expandable #pagesList [expanded]="true" title="">
         <button menuClose ion-item no-lines *ngFor="let p of pages" (click)="openPage(p)">
           {{p.title}}
@@ -22,7 +22,7 @@
           About
         </button>
       </expandable>
-      <hr>      
+      <hr>
       <expandable #projects [expanded]="true" title="Bookmarks">
         <button ion-item no-lines *ngFor="let path of settings.getPaths()" (click)="loadProjectFiles(path.url)">
           {{path.name}}
@@ -41,3 +41,5 @@
 
 <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
 <ion-nav [class]="settings.config.theme" [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+
+<div id="draggable"></div>
