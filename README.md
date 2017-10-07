@@ -85,4 +85,4 @@ ionic cordova plaform remove <platform - ios or android> //this is sometimes req
 ionic cordova plaform add <platform - ios or android>
 ionic cordova run <platform> --aot --livereload 
 ```
-Then debug from `chrome://inspector/`
+Then debug from `chrome://inspect` using chrome or even electron
