@@ -50,14 +50,15 @@ Uses Ionic 3 framework and electron.
 - [ ] add letter spacing
 - [?] fix bug with 'save as'
 - [ ] add folder path for 'save as'
-- [x] fix new lines being removed while saving 
-- [ ] backup file if app stops obruptly 
+- [x] fix new lines being removed while saving
+- [ ] backup file if app stops obruptly
 - [ ] app icon 
-- [ ] enable window dragging from the top part 
+- [ ] enable window dragging from the top part
 - [ ] fade-out when on top 
-- [ ] on window you cannot go back when selecting a bookmark 
+- [ ] on window you cannot go back when selecting a bookmark
 - [ ] expand and contract animations for the side-menu
-- [ ] add help and cheat-sheets: http://reu.dimacs.rutgers.edu/Symbols.pdf , https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+- [ ] add help and cheatsheets: 
+http://reu.dimacs.rutgers.edu/Symbols.pdf , https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 
 
 ## Building from source
@@ -65,13 +66,13 @@ Uses Ionic 3 framework and electron.
 git clone https://github.com/syshock/meaning.git
 cd meaning
 npm install
-ionic serve --nobrowser
+ionic build --prod --release
 npm run ebuild -- (-w for windows; -l for linux; -m for mac)
 ```
 
 ## Live development in electron
 ```
-ionic serve --nobrowser -d
+ionic serve --nobrowser
 npm run electron -- test (optionally, -p <port>; -h <host address>)
 ```
 

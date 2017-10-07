@@ -9,18 +9,14 @@ import markjax from 'markjax'
 @Injectable()
 export class MarkjaxProvider {
 
-  content: string;
+  settings: any;
 
   constructor() {
     console.log('Hello MarkjaxProvider Provider');
   }
 
   parse(source, dest){
-    markjax()
-  }
-
-  render(){
-    
+     markjax(source, dest)
   }
 
 }

@@ -13,6 +13,7 @@ export class ExternFilesProvider {
   private _successMessenger: any
 
   openedFile: string;
+  defaultAppLocation: string = "Meaning"
 
 
   constructor(private platform: Platform,
@@ -30,29 +31,54 @@ export class ExternFilesProvider {
   }
 
 
+  private _electronHasAppFolder() {
+    const res:any = this._electronListDirs()
+    
+    if (res.indexOf(this.defaultAppLocation) < 0) { 
+      this._electronMakeDir(this.defaultAppLocation)
+      this.goToDir(this.defaultAppLocation)
+    }
+    else  
+      this.goToDir(this.defaultAppLocation)      
+  }
+  
+  private async _cordovaHasAppFolder() {
+    const res = await this._cordovaListDirs()
+
+    if (res.indexOf(this.defaultAppLocation) < 0) { 
+      this._cordovaMakeDir(this.defaultAppLocation)
+      this.goToDir(this.defaultAppLocation)
+    }
+    else
+      this.goToDir(this.defaultAppLocation)
+  }
+
+
+
   checkPlatform(){
-    console.log(this.platform.platforms())
     if (this.platform.is('electron')) this.initElectronFileCalls();
     if (this.platform.is('cordova')) this.initCordovaFileCalls();
   }
 
   private initElectronFileCalls(){
     console.log('Setting up for electron.');
-
-    const process = require('electron').remote.require('process')
+    const _window: any = window
+    const process = _window.require('process')
     const home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
 
-    this.fileCalls =  require('electron').remote.require('fs')
+    this.fileCalls = _window.require('fs')
     this.base = [home];
     this._base = home;
     this.listDirs = this._electronListDirs
     this.listFiles = this._electronListFiles
-    this.listFilesAsync = this._electronListFilesAsync
+    // this.listFilesAsync = this._electronListFilesAsync
     this.makeDir = this._electronMakeDir
     this.openFile = this._electronRead
     this.saveFile = this._electronWrite
     this.deleteFile = this._electronDeleteFile
     this.getMetadata = this._electronGetMetadata
+
+    // this._electronHasAppFolder()
   }
 
   private initCordovaFileCalls(){
@@ -69,6 +95,8 @@ export class ExternFilesProvider {
     this.saveFile = this._cordovaWrite
     this.deleteFile = this._cordovaDelecteFile
     this.getMetadata = this._cordovaGetMetadata
+
+    // this._cordovaHasAppFolder()
   }
 
 
@@ -103,14 +131,11 @@ export class ExternFilesProvider {
     let res: Array<string> = this.fileCalls.readdirSync(baseURL)
     let ret = res.filter((en) => { return this.fileCalls.statSync(baseURL + '/' + en).isFile() })
     let _ret = []
-  //  for (let suffix of suffixes) {
-  //    _ret = _ret.concat(ret.filter((el) => { return el.includes(suffix) }))
-  //  }
-    ret.forEach((el)=>{
-      for (let suffix of suffixes){
-        if(el.includes(suffix)) _ret.push(el)
-      }
-    })
+    // ret.forEach((el)=>{
+    //   for (let suffix of suffixes){
+    //     if(el.includes(suffix)) _ret.push(el)
+    //   }
+    // })
     return _ret
   }
 
