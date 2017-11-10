@@ -3,8 +3,7 @@ An entirely local and private markdown/note-taking app.
 
 Uses Ionic 3 framework and electron. 
 
-[![Demo](https://img.youtube.com/vi/VID/0.jpg)](https://i.imgur.com/xTEBR0b.mp4)
-<video src="https://i.imgur.com/xTEBR0b.mp4"></video>
+![Demo](https://i.imgur.com/xTEBR0b.gifv)
 
 #### Features:
 - Live-rendering
