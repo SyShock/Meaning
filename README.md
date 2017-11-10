@@ -3,13 +3,16 @@ An entirely local and private markdown/note-taking app.
 
 Uses Ionic 3 framework and electron. 
 
+[![Demo](https://img.youtube.com/vi/VID/0.jpg)](https://i.imgur.com/xTEBR0b.mp4)
+<video src="https://i.imgur.com/xTEBR0b.mp4"></video>
+
 #### Features:
 - Live-rendering
-- Spell-check
-- Option for conditional rendering
+- ~~Spell-check~~
+- ~~Option for conditional rendering~~
 - Different edit modes: Edit only, Preview only
 - Customizable theme, font color, font style, size and letter spacing 
-- Optional typewritter sound-effect
+- ~~Optional typewritter sound-effect~~
 - Optional line focusing
 - Bookmarks (for folders)
 - Supported platforms - Windows, MacOS, Linux, Android, iOS
