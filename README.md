@@ -3,7 +3,7 @@ An entirely local and private markdown/note-taking app.
 
 Uses Ionic 3 framework and electron. 
 
-![Demo](https://i.imgur.com/xTEBR0b.gifv)
+![Example](https://github.com/SyShock/Meaning/blob/master/output.gif?raw=true)
 
 #### Features:
 - Live-rendering
@@ -31,6 +31,7 @@ Uses Ionic 3 framework and electron.
 - D3 file visualization
 - File tagging & search by tags
 - File entryption
+- Cross-device synching with webRTC
 
 
 #### To Do:
@@ -87,4 +88,4 @@ ionic cordova plaform remove <platform - ios or android> //this is sometimes req
 ionic cordova plaform add <platform - ios or android>
 ionic cordova run <platform> --aot --livereload 
 ```
-Then debug from `chrome://inspect` using chrome or even electron
+Then debug from `chrome://inspect` using chrome or electron
