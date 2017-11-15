@@ -1,6 +1,5 @@
 # Meaning
 An entirely local and private markdown/note-taking app.
-
 Uses Ionic 3 framework and electron. 
 
 ![Example](https://github.com/SyShock/Meaning/blob/master/output.gif?raw=true)
@@ -14,7 +13,7 @@ Uses Ionic 3 framework and electron.
 - ~~Optional typewritter sound-effect~~
 - Optional line focusing
 - Bookmarks (for folders)
-- Supported platforms - Windows, MacOS, Linux, Android, iOS
+- Supported platforms - Windows, ~~MacOS~~, Linux, Android, iOS
 - Minimilistic UI
 
 
@@ -30,7 +29,7 @@ Uses Ionic 3 framework and electron.
 ##### Considering:
 - D3 file visualization
 - File tagging & search by tags
-- File entryption
+- File encryption
 - Cross-device synching with webRTC
 
 
@@ -51,17 +50,18 @@ Uses Ionic 3 framework and electron.
 - [x] add color-picker
 - [ ] add more font styles
 - [ ] add letter spacing
-- [?] fix bug with 'save as'
+- [ ] fix bug with 'save as'
 - [ ] add folder path for 'save as'
 - [x] fix new lines being removed while saving
 - [ ] backup file if app stops obruptly
 - [ ] app icon 
-- [ ] enable window dragging from the top part
+- [X] enable window dragging from the top part
 - [ ] fade-out when on top 
 - [ ] on window you cannot go back when selecting a bookmark
 - [ ] expand and contract animations for the side-menu
 - [ ] add help and cheatsheets: 
-http://reu.dimacs.rutgers.edu/Symbols.pdf , https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+http://reu.dimacs.rutgers.edu/Symbols.pdf,
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 
 
 ## Building from source
