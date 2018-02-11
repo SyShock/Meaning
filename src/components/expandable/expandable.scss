@@ -14,4 +14,13 @@ expandable {
         height: auto;
         display: unset;
     }
+    .wrapper > span {
+        height: 0;
+        display: none;
+
+    }
+    .expanded > span {
+        height: auto;
+        display: unset;
+    }
 }

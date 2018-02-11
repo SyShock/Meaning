@@ -18,32 +18,27 @@ import { MarkjaxProvider } from '../providers/markjax/markjax';
 import { SettingsProvider } from '../providers/settings/settings';
 
 @NgModule({
-  declarations: [
-    MyApp,
-    ExpandableComponent,
-    ],
+  declarations: [MyApp, ExpandableComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HomePageModule,
     FolderBrowserModule,
     SettingsPageModule,
-    IonicStorageModule.forRoot()    
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-  ],
+  entryComponents: [MyApp],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     ExternFilesProvider,
     File,
     MarkjaxProvider,
     MenuToggle,
     SettingsProvider,
-    MarkjaxProvider,
+    MarkjaxProvider
   ]
 })
 export class AppModule {}

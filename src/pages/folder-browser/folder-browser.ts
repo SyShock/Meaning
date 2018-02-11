@@ -22,8 +22,10 @@ export class FolderBrowserPage {
   files: Array<any> = [];
   foldersBackup: Array<any> = [];
   path: string;
+  basePath: string;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
     private extFiles: ExternFilesProvider,
     private alertCtrl: AlertController,
@@ -37,7 +39,8 @@ export class FolderBrowserPage {
     if (this.fileSelect) this.loadFilesAndDirs()
     else this.loadList()
     console.log('ionViewDidLoad FolderBrowserPage');
-    this.path = this.extFiles.base[0]
+    this.path = this.extFiles.base;
+    this.basePath = this.extFiles._base;
   }
 
   async loadList(){
@@ -62,7 +65,7 @@ export class FolderBrowserPage {
   async select(){
     this.extFiles.selectDir()
     let r = await this.extFiles.listFiles(['.md','.txt'])
-    let dirName = this.path.match(/\/\w+\/$/g)
+    let dirName = this.path.match(/(\w+)$/g)
     this.settings.addPath(dirName, this.path)
     this.getMetadata(r)
     this.navCtrl.setRoot(HomePage)
@@ -70,19 +73,21 @@ export class FolderBrowserPage {
   }
 
   async openFile(fileName){
-    let ret = await this.extFiles.openFile(fileName)
+    let ret = {content: null, isTemplate: false}
+    if (this.path.includes(`${this.extFiles.defaultAppLocation}/templates`)) ret.isTemplate = true;
+    ret.content = await this.extFiles.openFile(fileName)
     this.events.publish('file-opened', ret)
     this.navCtrl.pop()
   }
 
   async goTo(dirName){
     this.path = await this.extFiles.goToDir(dirName)
-    this.loadList()
+    this.loadFilesAndDirs()
   }
 
   prevDir(){
     this.path = this.extFiles.prevDir()
-    this.loadList()
+    this.loadFilesAndDirs()
   }
 
   makeDir(dirName){

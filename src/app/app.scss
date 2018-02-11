@@ -44,12 +44,14 @@ h3{
     }
 
 }
+#toolbar{
+  height: 3em;
+}
 #title{
     box-shadow: unset;
     -webkit-box-shadow: unset;
     color: teal;
     padding: unset;
-
 
     .searchbar-input {
         padding-left: 20px;

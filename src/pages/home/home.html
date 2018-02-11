@@ -1,21 +1,16 @@
-<ion-content fullscreen 
-  (document:keyup)="onKeyUp($event)"
-  (document:selectionchange)="onSelectionChange($event)"
-  (window:resize)="onResize($event)"
-  >
+<ion-content fullscreen (document:keyup)="onKeyUp($event)" (document:selectionchange)="onSelectionChange($event)" (window:resize)="onResize($event)">
 
   <!-- <templates #templates></templates> -->
 
-
-
   <div id="title-bar">
-
+    <!-- <ion-input clearInput type="search" [class.slide-in-top]="searchMode" (keyup)="onSearchInput($event)"></ion-input> -->
   </div>
 
-
-
   <span *ngIf="!smallScreen" id="wide" [class]="previewMode">
-    <span #input id="first-screen" [class.notFocused]="textFocused"  contenteditable="true" (input)="render()"><div>Content</div></span>
+    <!-- <codemirror></codemirror> -->
+    <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="render()">
+      <div>Content</div>
+    </span>
     <span #output id="second-screen" [style.fontFamily]="textFont" [style.color]="textColor"></span>
   </span>
 
@@ -37,32 +32,40 @@
       <ion-icon color='black' name="menu"></ion-icon>
     </button>
   </ion-buttons>
-  <ion-buttons *ngIf='!smallScreen'  class="top-right">
-    <button ion-button clear (click)="exitApp()">
+  <ion-buttons *ngIf='!smallScreen' class="top-right">
+    <button ion-button clear (tap)="exitApp()">
       <ion-icon color='black' name="close"></ion-icon>
     </button>
   </ion-buttons>
-  <ion-buttons *ngIf='smallScreen'  class="top-right">
-    <button ion-button clear (click)="undo()">
+  <ion-buttons *ngIf='smallScreen' class="top-right">
+    <button ion-button clear (tap)="toggleSearch()">
+      <ion-icon color='black' name="search"></ion-icon>
+    </button>
+    <button ion-button clear (tap)="undo()">
       <ion-icon color='black' name="undo"></ion-icon>
     </button>
-    <button ion-button clear (click)="redo()">
+    <button ion-button clear (tap)="redo()">
       <ion-icon color='black' name="redo"></ion-icon>
     </button>
 
-
   </ion-buttons>
 
-<ion-buttons *ngIf='!smallScreen' class="bottom-right">
 
-    <button ion-button clear (click)="showPopover()">
+  <ion-buttons *ngIf='!smallScreen' class="bottom-right">
+
+    <button ion-button clear (tap)="showPopover($event)">
       <ion-icon color='black' name="eye"></ion-icon>
     </button>
   </ion-buttons>
 
-  <div id="status-bar">Word Count: {{wordCount}}
+  <!-- <div id="status-bar">Word Count: {{wordCount}} </div> -->
 
-  </div>
+
+  <ion-fab *ngIf="isTemplate" right bottom>
+    <button ion-fab (tap)="selectTemplate()">
+      <ion-icon name="copy"></ion-icon>
+    </button>
+  </ion-fab>
 
 
 </ion-content>

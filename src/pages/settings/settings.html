@@ -21,21 +21,21 @@
     <!-- <h3>Projects</h3> -->
     <ion-label item-start>Bookmarks</ion-label>
     <button ion-button clear icon-only item-end (click)="addProjectPath()">
-        <ion-icon name="add"></ion-icon>
+      <ion-icon name="add"></ion-icon>
     </button>
   </ion-item>
   <ion-list>
     <ion-item no-lines *ngFor="let path of paths" (click)="doPromptSync()">
       <ion-label item-left>{{path.name}}</ion-label>
       <button ion-button clear item-right (click)="removeProjectPath(path.name)">
-          <ion-icon name="close"></ion-icon>
+        <ion-icon name="close"></ion-icon>
       </button>
     </ion-item>
   </ion-list>
   <ion-item>
     <ion-label>Theme</ion-label>
-    <ion-select [(ngModel)]="theme" interface="popover" (ionChange)="onThemeChange()">
-      <ion-option *ngFor="let opt of themes" [value]="opt.value">{{opt.name}}</ion-option>
+    <ion-select item-end [placeholder]="theme" (tap)="showPopOver($event, themes, onThemeChange)">
+      {{theme}}
     </ion-select>
   </ion-item>
   <ion-item>
@@ -45,23 +45,36 @@
   </ion-item>
   <ion-item>
     <ion-label>Header Font</ion-label>
-    <ion-select [(ngModel)]="headerFont" interface="popover" (ionChange)="onHeaderFontChange(headerFont)">
-      <ion-option *ngFor="let opt of headerFontOptions" [value]="opt.value" [style.fontfamily]="opt.value">{{opt.name}}</ion-option>
+    <ion-select item-end [placeholder]="headerFont"  (tap)="showPopOver($event, headerFontOptions, onHeaderFontChange)">
+      {{headerFont}}
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Text Font</ion-label>
-    <ion-select [(ngModel)]="textFont" interface="popover" (ionChange)="onTextFontChange(textFont)">
-      <ion-option *ngFor="let opt of textFontOptions" [value]="opt.value" style="font-family: {{opt.value}}">{{opt.name}}</ion-option>
+    <ion-select item-end [placeholder]="textFont" (tap)="showPopOver($event, textFontOptions, onTextFontChange)">
+      {{textFont}}
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Font Size</ion-label>
-    <ion-select [(ngModel)]="textSize" interface="popover" (ionChange)="onFontSizeChange(textSize)">
-      <ion-option *ngFor="let opt of fontSizeList" [value]="opt.value" style="font-size: {{opt.value}}">{{opt.name}}</ion-option>
+    <ion-select item-end [placeholder]="textSize" (tap)="showPopOver($event, fontSizeList, onFontSizeChange)">
+      {{textSize}}
     </ion-select>
   </ion-item>
-  <input ion-item [style.color]="headerColor" [value]="'Header Color: ' + headerColor" [(colorPicker)]="headerColor" (colorPickerChange)="onHeaderColorChange(headerColor)" [cpPosition]="'top'" [style.color]="headerColor"/>
-
-    <input ion-item [style.color]="textColor" [value]="'Text Color: ' + textColor" [(colorPicker)]="textColor" (colorPickerChange)="onTextColorChange(textColor)" [cpPosition]="'top'" [style.color]="textColor"/>
+  <ion-item id="header-colors">
+    <ion-label>Header Color</ion-label>
+    <ion-buttons item-end end>
+      <button ion-button (tap)="onHeaderColorChange(color.value)" *ngFor="let color of colors" [style.background]="color.value">
+        <ion-icon *ngIf="color.value == headerColor" name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-item>
+  <!-- <ion-item id="text-colors">
+    <ion-label>Text Color</ion-label>
+    <ion-buttons item-end end>
+      <button ion-button (tap)="onTextColorChange(color.value)" *ngFor="let color of colors" [style.background]="color.value">
+        <ion-icon *ngIf="color.value == textColor" name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-item> -->
 </ion-content>

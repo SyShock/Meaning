@@ -19,9 +19,9 @@ export class SettingsProvider {
 
   constructor() {
     console.log('Hello SettingsProvider Provider');
-    let config: IConfig = {
+    this.config = {
       theme:'light-theme',
-      paths: [{name: '', url: ''}],
+      paths: [{ name: '', url: '' }],
       headerFont: '',
       headerColor: '',
       textFont: '',
@@ -29,8 +29,7 @@ export class SettingsProvider {
       textSize: 'normal',
       textFocus: true
     }
-    config.paths.pop()
-    this.initConfig(config)
+    this.config.paths.pop()
   }
 
   initConfig(obj: IConfig){

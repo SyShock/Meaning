@@ -31,7 +31,6 @@ export class PopUp{
 
   setCallback(callback?){
     callback = this.navParams.get('callback')
-    console.log(callback)
     this.callback = callback
   }
 

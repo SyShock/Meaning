@@ -78,12 +78,22 @@
     ion-content {
       background-color: #fff;
     }
-   
+
     .toolbar-background {
       background-color: #fff;
     }
 
-    page-home #wide #first-screen{
+    page-home #first-screen{
+
+    #title-bar{
+      position: fixed;
+      background: linear-gradient(to bottom, rgb(255, 255, 255) 10%, rgba(0, 0, 0, 0)) 100%;
+      z-index: 1;
+      top: 0;
+      width: 100%;
+      height: 10px;
+    }
+
       background-color: #eee !important;
     }
 

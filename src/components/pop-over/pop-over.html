@@ -1,0 +1,5 @@
+<!-- Generated template for the PopUpComponent component -->
+  <ion-item *ngFor="let opt of modes">
+    <ion-label>{{opt.name}}</ion-label>
+    <ion-radio (ionSelect)="set(opt)" [checked]="state == opt.name"></ion-radio>
+  </ion-item>
