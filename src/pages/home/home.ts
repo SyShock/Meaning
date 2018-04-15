@@ -286,7 +286,7 @@ export class HomePage {
     // console.log(a, e, pattern)
   }
   onSearchInput(e) {
-    console.log(e);
+    // console.log(e);
     if (e.key == "F3") this.goTo({ forward: true });
     else this.searchText();
   }
@@ -318,7 +318,7 @@ export class HomePage {
   }
 
   showPopover(e) {
-    console.log(e);
+    // console.log(e);
     let popover = this.popoverCtrl.create(
       PopUp,
       {
@@ -447,8 +447,9 @@ export class HomePage {
   }
 
   onKeyUp(e: KeyboardEvent) {
-    console.log(e);
+    // console.log(e);
     const range = document.getSelection();
+    if(!range.focusNode.parentNode) return;
     const el: any = range.focusNode.parentNode;
     if (el.classList && el.classList[0] === "match" && e.code.includes("Key")) {
       const parent = el.parentNode;

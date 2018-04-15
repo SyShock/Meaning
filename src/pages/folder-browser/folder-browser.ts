@@ -142,7 +142,7 @@ export class FolderBrowserPage {
 
 
   onKeyUp(e: KeyboardEvent){
-    console.log(e)
+    // console.log(e)
     if(e.key === 'Escape') this.navCtrl.pop()
 
   }

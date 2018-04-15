@@ -53,7 +53,7 @@
         "@angular/tsc-wrapped": "^4.4.4",
         "@ionic/app-scripts": "^3.0.0",
         "@types/electron": "^1.6.10",
-        "electron": "^1.7.11",
+        "electron": "^1.8.3",
         "electron-builder": "^19.27.7",
         "typescript": "^2.3.4"
     },

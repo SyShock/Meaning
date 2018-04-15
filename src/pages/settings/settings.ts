@@ -182,8 +182,6 @@ export class SettingsPage {
   }
 
   onTextFocusChange(value) {
-    console.log("giving ", value);
-
     this.settings.setTextFocus(value);
   }
 
