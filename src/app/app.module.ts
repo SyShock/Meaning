@@ -2,6 +2,7 @@ import { ExpandableComponent } from './../components/expandable/expandable';
 import { IonicStorageModule } from '@ionic/storage';
 import { SettingsPageModule } from './../pages/settings/settings.module';
 import { BrowserModule } from '@angular/platform-browser';
+import { Keyboard } from '@ionic-native/keyboard'
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule, MenuToggle } from 'ionic-angular';
 
@@ -35,6 +36,7 @@ import { SettingsProvider } from '../providers/settings/settings';
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     ExternFilesProvider,
     File,
+    Keyboard,
     MarkjaxProvider,
     MenuToggle,
     SettingsProvider,

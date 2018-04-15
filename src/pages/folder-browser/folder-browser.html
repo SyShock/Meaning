@@ -3,6 +3,9 @@
   <ion-navbar>
     <ion-label>{{path}}</ion-label>
     <ion-buttons end>
+        <button ion-button clear (tap)="toggleSearch()">
+            <ion-icon color='black' name="search"></ion-icon>
+          </button>
       <button ion-button clear (click)="doPrompt()">
         <ion-icon name="add"></ion-icon>
       </button>
@@ -36,11 +39,11 @@
         <ion-icon  name="folder"></ion-icon>
         <ion-label>..</ion-label>
       </button>
-      <button ion-button clear col-2 *ngFor="let folder of folders" (tap)="goTo(folder)">
+      <button ion-button clear col-2 *ngFor="let folder of folders" (tap)="goTo(folder)" (press)="openModal()">
         <ion-icon name="folder"></ion-icon>
         <ion-label>{{folder}}</ion-label>
       </button>
-      <button ion-button clear col-2 *ngFor="let file of files" (tap)="openFile(file)">
+      <button ion-button clear col-2 *ngFor="let file of files" (tap)="openFile(file)" (press)="openModal()">
         <ion-icon name="document"></ion-icon>
         <ion-label>{{file}}</ion-label>
       </button>

@@ -1,7 +1,7 @@
 import { SettingsProvider } from './../../providers/settings/settings';
 import { HomePage } from './../home/home';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Events, MenuController } from 'ionic-angular';
 import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
 
 @IonicPage()
@@ -30,17 +30,26 @@ export class FolderBrowserPage {
     private extFiles: ExternFilesProvider,
     private alertCtrl: AlertController,
     private events: Events,
+    private menuCtrl: MenuController,    
     private settings: SettingsProvider) {
 
   }
 
   ionViewDidLoad() {
+    this.menuCtrl.close();
     this.fileSelect = this.navParams.get('fileSelect')
-    if (this.fileSelect) this.loadFilesAndDirs()
+    if (this.fileSelect) {
+      if (this.navParams.get('templates')) this.extFiles.jumpToDir(this.extFiles._base + '/Meaning/templates');
+      this.loadFilesAndDirs()
+    }
     else this.loadList()
     console.log('ionViewDidLoad FolderBrowserPage');
     this.path = this.extFiles.base;
     this.basePath = this.extFiles._base;
+  }
+  
+  ionViewWillLeave(){
+    if(this.fileSelect) this.events.publish('menu-toggle')
   }
 
   async loadList(){
@@ -69,6 +78,7 @@ export class FolderBrowserPage {
     this.settings.addPath(dirName, this.path)
     this.getMetadata(r)
     this.navCtrl.setRoot(HomePage)
+    this.events.publish('bookmark-selected')
     this.events.publish('menu-toggle')
   }
 
@@ -139,6 +149,10 @@ export class FolderBrowserPage {
 
   goBack(){
     this.navCtrl.pop()
+  }
+
+  openModal(){
+
   }
 
   search(){

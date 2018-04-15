@@ -3,26 +3,39 @@
   <!-- <templates #templates></templates> -->
 
   <div id="title-bar">
-    <!-- <ion-input clearInput type="search" [class.slide-in-top]="searchMode" (keyup)="onSearchInput($event)"></ion-input> -->
+    <ion-item no-lines [class.slide-in-top]="searchMode" [class.slide-out-top]="!searchMode">
+      <ion-input id="search-bar" #searchBar type="search" (keyup)="onSearchInput($event)"></ion-input>
+      <ion-buttons item-end>
+          <button ion-button clear icon (tap)="toggleSearch()">
+              <ion-icon name="close"></ion-icon>
+            </button>
+        <button ion-button clear icon (tap)="goTo({forward: true})">
+          <ion-icon name="arrow-down"></ion-icon>
+        </button>
+        <button ion-button clear icon (tap)="goTo({forward: false})">
+          <ion-icon name="arrow-up"></ion-icon>
+        </button>
+        <label>{{matchIndex}}/{{matches}}</label>
+      </ion-buttons>`
+    </ion-item>
   </div>
 
   <span *ngIf="!smallScreen" id="wide" [class]="previewMode">
-    <!-- <codemirror></codemirror> -->
-    <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="render()">
-      <div>Content</div>
+    <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="onEditInput()">
+      <div data-text="Content"></div>
     </span>
-    <span #output id="second-screen" [style.fontFamily]="textFont" [style.color]="textColor"></span>
+    <span #output id="second-screen" [style.fontSize]="textSize" [style.fontFamily]="textFont" [style.color]="textColor"></span>
   </span>
 
   <span *ngIf="smallScreen" id="small">
-    <ion-slides>
+    <ion-slides #slider>
       <ion-slide>
-        <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="render()">
-          <div>Content</div>
+        <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="onEditInput()">
+          <div data-text="Content"></div>
         </span>
       </ion-slide>
       <ion-slide>
-        <span id="second-screen" #output></span>
+        <span id="second-screen" #output [style.fontSize]="textSize" [style.fontFamily]="textFont" ></span>
       </ion-slide>
     </ion-slides>
   </span>
@@ -37,7 +50,7 @@
       <ion-icon color='black' name="close"></ion-icon>
     </button>
   </ion-buttons>
-  <ion-buttons *ngIf='smallScreen' class="top-right">
+  <ion-buttons *ngIf='smallScreen' [class.searchMode]="searchMode" class="top-right">
     <button ion-button clear (tap)="toggleSearch()">
       <ion-icon color='black' name="search"></ion-icon>
     </button>

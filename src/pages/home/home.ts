@@ -13,11 +13,9 @@ import {
 } from "ionic-angular";
 import { PopUp } from "./home-view-popup";
 import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
+import { Slides } from "ionic-angular";
+import { Keyboard } from "@ionic-native/keyboard";
 
-//split page view (like in academic docs), page limit
-//own selection marking, own popup on right-click
-//download pdfs, after installing
-//remove events, use markedProvider in app.comp and this page
 
 @IonicPage()
 @Component({
@@ -28,10 +26,13 @@ export class HomePage {
   @ViewChild("input") input: any;
   @ViewChild(PopUp) popup: PopUp;
   @ViewChild("output") output: any;
+  @ViewChild("slider") slider: Slides;
+  @ViewChild('searchBar') searchbar: any;
+  
   smallScreen: boolean;
   wideScreen: boolean;
 
-  textAreaContent: string = "<div>Content</div>";
+  textAreaContent: string = `<div data-text="Content"></div>`;
 
   wordCounter: boolean;
   textFocused: boolean;
@@ -40,6 +41,7 @@ export class HomePage {
   headerColor: string;
   headerFont: string;
   textColor: string;
+  textSize: string;
 
   wordCount: number;
   percentViewing: number;
@@ -50,8 +52,12 @@ export class HomePage {
   isTemplate: boolean;
 
   matches: number;
-  matchIndex: number;
+  matchIndex: number = -1;
   searchMode: boolean = false;
+
+  findInPage: any;
+
+  hasChanged: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -62,8 +68,10 @@ export class HomePage {
     private toastCtrl: ToastController,
     private parser: MarkjaxProvider,
     private settings: SettingsProvider,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private keyboard: Keyboard
   ) {
+    
     this.events.unsubscribe("file-opened", r => this.onFileOpened(r));
     this.events.unsubscribe("to-save-file", () => this._saveFile());
     this.events.unsubscribe("to-save-file-as", () => this.showPrompt());
@@ -75,14 +83,29 @@ export class HomePage {
     this.events.subscribe("to-save-file-as", () => this.showPrompt());
     this.events.subscribe("config-loaded", () => this.ionViewDidEnter());
     this.events.subscribe("new-file", () => this.onNewFile());
+    // this.findInPage = new FindInPage();
+    // console.log(this.findInPage)
   }
 
   ionViewDidEnter() {
     this.headerColor = this.settings.getHeaderColor();
     this.headerFont = this.settings.getHeaderFont();
+    this.textSize = this.settings.getTextSize();
     this.textFont = this.settings.getTextFont();
     this.textColor = this.settings.getTextColor();
     this.textFocused = this.settings.getTextFocus();
+
+    //experiment which input is best
+    if (this.slider) {
+      this.slider.ionSlideDidChange.subscribe(() => {
+        if (this.slider.getActiveIndex() === 0) this.keyboard.show();
+        else this.keyboard.close();
+      });
+
+      this.keyboard.onKeyboardHide().subscribe(() => {
+        this.slider.slideTo(1);
+      });
+    }
 
     this.onResize();
     this.colorViewScreen();
@@ -220,10 +243,20 @@ export class HomePage {
     document.execCommand("insertText", false, text);
   }
 
-  toggleSearch(){
+  toggleSearch() {
     this.searchMode = !this.searchMode;
+    if (this.searchMode) {
+      this.searchbar.setFocus();
+      const length = this.searchbar.value.length;
+      //@ts-ignore
+      document.getElementById('search-bar').children[0].setSelectionRange(length, length);
+      this.searchText();
+    } else {
+      this.searchClear();
+    }
   }
-  searchText(e) {
+  // document or specific el
+  searchClear() {
     let spans: any = document.getElementsByClassName("match");
     spans = Array.from(spans);
     for (let span of spans) {
@@ -231,35 +264,46 @@ export class HomePage {
       parent.insertBefore(span.firstChild, span);
       parent.removeChild(span);
     }
-    if (e.target.value.length === 0) return;
-    this.matchIndex = 0;
+  }
+  searchText() {
+    this.searchClear();
+    if (this.searchbar.value.length === 0) return;
+    this.matchIndex = -1;
     this.matches = -1;
-    const pattern = new RegExp(`>(.*?)<`, 'gi');
+    const pattern = new RegExp(`>(.*?)<`, "gi");
     this.input.nativeElement.innerHTML = this.input.nativeElement.innerHTML.replace(
       pattern,
       (match, ptr) => {
-        ptr = new RegExp(`${e.target.value}`, 'gi');
-        return match.replace(ptr, (_match) => {
-          this.matches++
-          return `<span style="background: yellow" class="match ${this.matches}">${_match}</span>`}
-        )}
+        ptr = new RegExp(`${this.searchbar.value}`, "gi");
+        return match.replace(ptr, _match => {
+          this.matches++;
+          return `<span style="background: yellow" class="match ${
+            this.matches
+          }">${_match}</span>`;
+        });
+      }
     );
     // console.log(a, e, pattern)
   }
-  onSearchInput(e){
-    console.log(e)
-    if (e.key == 'F3') this.goTo();
-    else this.searchText(e)
+  onSearchInput(e) {
+    console.log(e);
+    if (e.key == "F3") this.goTo({ forward: true });
+    else this.searchText();
   }
-  goTo(){
-    const matches = document.getElementsByClassName('match')
-    const range = document.createRange()
-    const selector = document.getSelection()
-    range.selectNode(matches[this.matchIndex])
-    selector.removeAllRanges()
-    selector.addRange(range)
-    if (this.matches > this.matchIndex) this.matchIndex++
-    else this.matchIndex = 0
+  goTo({ forward }) {
+    if (forward && this.matches > this.matchIndex) this.matchIndex++;
+    else if (!forward && this.matchIndex > 0) this.matchIndex--;
+    else this.matchIndex = 0;
+
+    const matches = document.getElementsByClassName("match");
+    const range = document.createRange();
+    const selector = document.getSelection();
+    const el: any = matches[this.matchIndex];
+    range.selectNode(el);
+    selector.removeAllRanges();
+    selector.addRange(range);
+    el.scrollIntoView(false);
+    el.focus();
   }
 
   /**
@@ -288,9 +332,9 @@ export class HomePage {
     popover.present({ direction: "down", ev: e });
   }
 
-  showToast() {
+  showToast(message) {
     const toast = this.toastCtrl.create({
-      message: "File Saved",
+      message: message,
       position: "top",
       duration: 3000
     });
@@ -313,7 +357,10 @@ export class HomePage {
   }
 
   showPrompt() {
+    const theme = this.settings.getActiveTheme()
+    console.log(theme)
     let prompt = this.alertCtrl.create({
+      cssClass: theme,      
       title: `File will be saved at:`,
       subTitle: `${this.files.base}`,
       inputs: [
@@ -342,7 +389,6 @@ export class HomePage {
           }
         }
       ],
-      cssClass: this.settings.getActiveTheme()
     });
     prompt.present();
     prompt.onDidDismiss(r => {
@@ -381,8 +427,11 @@ export class HomePage {
 
   saveFile(r) {
     //requires dialogue
-    this.files.saveFile(r + ".md", this.input.nativeElement.innerText);
-    this.showToast();
+    if (this.hasChanged) {
+      this.hasChanged = false;
+      this.files.saveFile(r + ".md", this.input.nativeElement.innerText);
+      this.showToast("File Saved");
+    }
   }
 
   /**
@@ -391,15 +440,26 @@ export class HomePage {
    * =============================================
    */
   onNewFile() {
-    this.input.nativeElement.innerHTML = "<div>Content</div>";
+    this.input.nativeElement.innerHTML = `<div data-text="Content"></div>`;
     this.files.clearPath();
     this.files.openedFile = "";
     this.render();
   }
 
   onKeyUp(e: KeyboardEvent) {
-    e.preventDefault();
-    if (e.key == 'F3') this.goTo();
+    console.log(e);
+    const range = document.getSelection();
+    const el: any = range.focusNode.parentNode;
+    if (el.classList && el.classList[0] === "match" && e.code.includes("Key")) {
+      const parent = el.parentNode;
+      parent.insertBefore(el.firstChild, el);
+      parent.removeChild(el);
+    } // best separate this block into a function
+    // rerun to return hightlight?
+    if (e.key == "F3") {
+      if (e.shiftKey) this.goTo({ forward: false });
+      else this.goTo({ forward: true });
+    }
     if (e.ctrlKey) {
       if (e.key === "S") this.showPrompt();
       else if (e.key === "s") this._saveFile();
@@ -417,6 +477,7 @@ export class HomePage {
   }
 
   onTextInput() {
+
     const input: HTMLElement = this.input.nativeElement;
     const regex = new RegExp(`/(${this.searchText})+/g`);
     const array = input.innerHTML.match(regex);
@@ -436,17 +497,27 @@ export class HomePage {
     this.render();
   }
 
+  onEditInput() {
+    if(this.searchMode) this.toggleSearch();
+    this.searchClear();
+    this.hasChanged = true;
+    this.render()
+  }
+
   onFileOpened(r) {
+
+    if (this.slider) this.slider.slideTo(1);
+
     this.isTemplate = r.isTemplate;
     this.input.nativeElement.innerHTML = this.wrapInDivs(r.content);
     this.render();
   }
 
-
   selectTemplate() {
     this.files.base = this.files._base + "/Meaning";
     this.files.openedFile = "";
     this.isTemplate = false;
+    this.showToast("Template Selected.");
   }
   onSelectionChange(e) {
     this.focusCurrentLine();

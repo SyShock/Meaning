@@ -1,3 +1,7 @@
+$primary-color: #000000;
+$side-bar-color: #111111;
+
+
 .dark-theme {
     h1,
     h2,
@@ -22,7 +26,7 @@
     .toolbar-background,
     .toggle-checked {
       // transition: all 1.1s ease;
-      background-color: black !important;
+      background-color: $primary-color !important;
     }
     .item-note,
     .themeButton,
@@ -31,7 +35,7 @@
       //background-color: #fff;
       //border-style: solid;
       //border-width: 1px;
-      //border-color: black;
+      //border-color: $primary-color;
     }
     ion-content,
     .input-wrapper,
@@ -41,22 +45,22 @@
     ion-item,
     ion-label {
       // transition: all 1.1s ease;
-      background-color: black !important;
-      background: black !important;
+      background-color: $primary-color !important;
+      background: $primary-color !important;
       color: white !important;
     }
       .label {
         background-color: initial !important;
       }
     ion-list {
-      background-color: black;
+      background-color: $primary-color;
     }
     .time {
-      background-color: black;
+      background-color: $primary-color;
     }
     .item {
       // transition: all 1s ease;
-      background-color: black;
+      background-color: $primary-color;
       color: white;
     }
     .range-bar {
@@ -69,28 +73,37 @@
     .range-pin::before,
     .range-knob,
     .range-bar-active {
-      background-color: black !important;
+      background-color: $primary-color !important;
       color: white !important;
     }
     ion-content {
-      background-color: #090f2f;
+      // background-color: #090f2f;
+      background-color: #444444;
       color: white;
     }
 
     .toolbar-title {
       color: white;
     }
+    
+    #menu *{
+      background-color: $side-bar-color !important;
+    }
+
+    .menu-inner *{
+      background-color: $side-bar-color !important;
+    }
 
     .header .toolbar-background {
-      border-color: black;
-      background-color: black;
+      border-color: $primary-color;
+      background-color: $side-bar-color;
     }
 
     page-home #wide #first-screen{
       background-color: #111 !important;
     }
     #title .searchbar-input{
-      background-color: black;
+      background-color: $primary-color;
       color: white;
     }
     .button-clear {
@@ -101,7 +114,15 @@
       box-shadow: none;
       opacity: 1;
     }
+    .popover-wrapper .popover-content{
+      background: black;
+    }
+    .alert-wrapper {
+      background: $primary-color !important; // bg color of alert content
+    }
+    
 page-home{
+
     #title-bar{
         // position: fixed;
         // // backdrop-filter: blur(1px);
@@ -111,6 +132,7 @@ page-home{
         // width: 100%;
         // height: 10px;
     }
+
 }
 
   page-home #second-screen{
@@ -124,8 +146,8 @@ page-home{
         border-left: 0.25em solid #444;
     }
     pre{
-            background-color: #111;
-            color: white;
+      background-color: #111;
+      color: white;
     }
   }
   hr {

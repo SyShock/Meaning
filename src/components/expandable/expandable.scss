@@ -1,3 +1,6 @@
+$duration: 1s;
+$maxHeight: 600px;
+
 expandable {
     .expandable-header{
         cursor: pointer;
@@ -6,21 +9,28 @@ expandable {
         font-size: larger;
     }
     .wrapper > .item {
-        height: 0;
-        display: none;
-
     }
     .expanded > .item {
-        height: auto;
-        display: unset;
     }
     .wrapper > span {
-        height: 0;
-        display: none;
-
     }
     .expanded > span {
-        height: auto;
-        display: unset;
     }
+
+    .wrapper {
+        max-height: 0;
+        overflow:hidden;
+        
+        transition: max-height $duration ease; 
+    }
+
+    .expanded {
+        max-height: $maxHeight;
+        overflow: hidden;
+        
+        transition: max-height $duration ease;
+        
+    }
+
+
 }

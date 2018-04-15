@@ -50,7 +50,7 @@ Uses Ionic 3 framework and electron.
 - [X] enable window dragging from the top part
 - [ ] on window you cannot go back when selecting a bookmark
 - [ ] expand and contract animations for the side-menu
-- [ ] fix focux line breaking after copy-paste
+- [ ] fix focus line breaking after copy-paste
 - [ ] add help and cheatsheets: 
 http://reu.dimacs.rutgers.edu/Symbols.pdf,
 https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
@@ -67,7 +67,7 @@ npm run ebuild -- (-w for windows; -l for linux; -m for mac)
 
 ## Live development in electron
 ```
-ionic serve --nobrowser
+ionic serve --no-open
 npm run electron -- test (optionally, -p <port>; -h <host address>)
 ```
 

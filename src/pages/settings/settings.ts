@@ -39,17 +39,6 @@ export class SettingsPage {
     private settings: SettingsProvider,
     private storage: Storage
   ) {
-    this.paths = this.settings.getPaths();
-    this.textFont = this.settings.getTextFont();
-    this.textColor = this.settings.getTextColor();
-    this.headerColor = this.settings.getHeaderColor();
-
-    this.textSize = this.settings.getTextSize();
-    this.textFocus = this.settings.getTextFocus();
-    this.headerFont = this.settings.getHeaderFont();
-
-    this.theme = this.settings.getActiveTheme();
-
     this.headerFontOptions = [
       { name: "Roboto", value: "roboto" },
       { name: "Monospace", value: "monospace" },
@@ -94,6 +83,40 @@ export class SettingsPage {
       { value: "#34495e" },
       { value: "#2c3e50" }
     ];
+
+
+    this.paths = this.settings.getPaths();
+    this._textFont = this.settings.getTextFont();
+    this.textColor = this.settings.getTextColor();
+    this.headerColor = this.settings.getHeaderColor();
+
+    this._textSize = this.settings.getTextSize();
+    this.textFocus = this.settings.getTextFocus();
+    this._headerFont = this.settings.getHeaderFont();
+
+    this._theme = this.settings.getActiveTheme();
+  }
+
+  set _textFont(value) {
+    const font = this.textFontOptions.filter((el) => el.value == value)[0];
+    if (font) this.textFont = font.name;
+  }
+
+  set _textSize(value) {
+    const size = this.fontSizeList.filter((el) => el.value == value)[0];
+    if (size) this.textSize = size.name
+  }
+
+  set _fontSize(value){
+    this.textSize = this.fontSizeList.filter((el) => el.value == value)[0].name;
+  }
+
+  set _headerFont(value){
+    this.headerFont = this.textFontOptions.filter((el) => el.value == value)[0].name;
+  }
+
+  set _theme(value){
+     this.theme = this.themes.filter((el) => el.value == value)[0].name;
   }
 
   ionViewDidLoad() {
@@ -109,7 +132,7 @@ export class SettingsPage {
   }
 
   onThemeChange = ({value}) => {
-    this.theme = value;
+    this._theme = value;
     this.settings.setTheme(value);
   }
 
@@ -129,22 +152,22 @@ export class SettingsPage {
   }
 
   onHeaderFontChange = ({ value }) => {
-    this.headerFont = value;
+    this._headerFont = value;
     this.settings.setHeaderFont(value);
   };
 
   onTextFontChange = ({ value }) => {
-    this.textFont = value;
+    this._textFont = value
     this.settings.setTextFont(value);
   }
 
   onTextSizeChange = ({ value }) => {
-    this.textSize = value;
+    this._textSize = value
     this.settings.setTextSize(value);
   }
 
   onFontSizeChange = ({ value }) => {
-    this.textSize = value;
+    this._textSize = value
     this.settings.setTextSize(value);
   }
 
@@ -154,7 +177,7 @@ export class SettingsPage {
   }
 
   onTextColorChange(value) {
-    this.textColor = value;
+    // this.textColor = this..filter((el) => el.value == value)[0].name;
     this.settings.setTextColor(value);
   }
 
@@ -164,7 +187,8 @@ export class SettingsPage {
     this.settings.setTextFocus(value);
   }
 
-  showPopOver(e, data, callback) {
+  showPopOver(e, data, _callback) {
+    const callback = (value) => {_callback(value); popover.dismiss();} 
     let popover = this.popoverCtrl.create(
       PopOver,
       {

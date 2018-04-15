@@ -22,9 +22,9 @@ export class SettingsProvider {
     this.config = {
       theme:'light-theme',
       paths: [{ name: '', url: '' }],
-      headerFont: '',
-      headerColor: '',
-      textFont: '',
+      headerFont: 'roboto',
+      headerColor: 'grey',
+      textFont: 'roboto',
       textColor: '',
       textSize: 'normal',
       textFocus: true

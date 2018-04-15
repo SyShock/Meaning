@@ -66,13 +66,13 @@ export class MyApp {
     {short:'md ', long: 'markdown'},
     {short:'? ', long: 'main'},
     {short:'b ', long: 'bookmark'},
-    {short:'f ', long: 'files'},
+    // {short:'f ', long: 'files'},
     {short:'h ', long: 'headers'},
   ];
   keyword: IKeyWord = null;
 
   main:Array<{title: string, do?: Function, component?: any, params?: Object}>
-  pages: Array<{title: string, component: any, params?: Object}>;
+  pages: Array<{title: string, component: any, params?: Object}> = [];
 
   constructor(public platform: Platform,
      public statusBar: StatusBar,
@@ -92,17 +92,18 @@ export class MyApp {
     });
 
     // used for an example of ngFor and navigation
-    this.pages = [];
       //about as an alert message
       this.events.subscribe("config-loaded", (data)=>{
         this.state.main = [
           { title: 'New', element: {do: () => {this.nav.setRoot(HomePage); this.events.publish('new-file') }}},
-          { title: 'Open File', element: {do: () => {this.menuCtrl.close(); this.nav.push(FolderBrowserPage, {'fileSelect': true})} } },
+          { title: 'Open File', element: {do: () => { this.nav.push(FolderBrowserPage, {'fileSelect': true})} } },
           { title: 'Save', element: {do: () => { this.menuCtrl.close(); this.events.publish('to-save-file')} } },
           { title: 'Save As', element: {do: () => { this.menuCtrl.close(); this.events.publish('to-save-file-as')} } },
+          { title: 'Open Template', element: {do: () => { this.nav.push(FolderBrowserPage, {'fileSelect': true, 'templates':true})} } },
+          { title: 'Save As Template', element: {do: () => { this.menuCtrl.close(); this.events.publish('to-save-file-as')} } },
           { title: "Settings", element: {do: ()=> { this.menuCtrl.close(); this.openPage({component: SettingsPage }) }} },
-          // { title: "Export", element: {component: SettingsPage }},
-          // { title: "About", element: {do: () => {} } }
+          { title: "Export", element: {component: SettingsPage }},
+          { title: "About", element: {do: () => {} } }
         ];
         this.backupState.main = this.state.main.concat();
 
@@ -144,13 +145,15 @@ export class MyApp {
               this.platform.exitApp()
             }
           } else this.nav.pop()
-          setTimeout(1000, ()=> this.showedAlert = false)
           this.showedAlert = true;
         });
       }
 
       this.events.subscribe('folder-selected', ()=>{
         this.loadFiles()
+      })
+      this.events.subscribe('bookmark-selected', ()=>{
+        this.getBookmarks()
       })
       this.events.subscribe('menu-toggle', ()=>{
         this.menu.toggle()
@@ -160,6 +163,13 @@ export class MyApp {
       })
     });
   }
+
+  getBookmarks(){
+    const bookmark = this.settings.getPaths();
+    this.state.bookmark = bookmark.map((el)=> { return {title: el.name[0], element:el} });
+    this.backupState.bookmark = this.state.bookmark.concat();
+  }
+
   //needs to have backup and normal state
   searchKeywords(word = null){
     let keyword = this.keywords.filter((el)=>{
@@ -198,14 +208,13 @@ export class MyApp {
       this.backupState.files = this.state.files.concat()
   }
   async loadProjectFiles(pathUrl: string){
-    console.log(pathUrl)
-    console.log(this.extFiles.base[0]);
     this.extFiles.clearPath()
     this.extFiles.jumpToDir(pathUrl)
-    this.state.files.splice(0, this.state.files.length)
-    const files = await this.extFiles.listFiles(['.md', '.txt'])
-    this.state.files = files.map((el) => {return {title: el, element: ''}})
-    this.backupState.files = this.state.files.concat()
+    this.nav.push(FolderBrowserPage, {'fileSelect': true}) 
+    // this.state.files.splice(0, this.state.files.length)
+    // const files = await this.extFiles.listFiles(['.md', '.txt'])
+    // this.state.files = files.map((el) => {return {title: el, element: ''}})
+    // this.backupState.files = this.state.files.concat()
     // this.extFiles.listFilesAsync(['.md', '.txt'], this._testLoad.bind(this))
   }
   async deleteFile(r){
@@ -246,6 +255,5 @@ export class MyApp {
   showMenu(){
   }
   showFiles(){
-
   }
 }

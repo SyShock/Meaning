@@ -44,7 +44,7 @@
         </button> -->
       </expandable>
       <!-- <span *ngFor="let key in state">
-        <hr>
+
         <expandable #projects [expanded]="keyword.long===key" title="Bookmarks">
           <button ion-item no-lines *ngFor="let el of state[key]" (tap)="loadProjectFiles(path.url)">
             {{path}}
@@ -52,19 +52,19 @@
         </expandable>
       </span> -->
 
-      <hr>
+
       <expandable #projects [expanded]="keyword && keyword.long==='bookmark'" (state)="searchKeywords($event ? 'bookmark' : null)" title="Bookmarks">
         <button ion-item no-lines *ngFor="let path of state.bookmark" (tap)="loadProjectFiles(path.element.url)">
           {{path.title}}
         </button>
       </expandable>
-      <hr>
-      <expandable #filesList [expanded]="keyword && (keyword.long=='files' || (state.files && keyword.long=='bookmark'))" (state)="searchKeywords($event ? 'files' : null)" title="Files">
+
+      <!-- <expandable #filesList [expanded]="keyword && (keyword.long=='files' || (state.files && keyword.long=='bookmark'))" (state)="searchKeywords($event ? 'files' : null)" title="Files">
         <button menuClose ion-item no-lines *ngFor="let file of state.files" (tap)="openFile(file)">
           {{file.title}}
         </button>
-      </expandable>
-      <hr>
+      </expandable> --> 
+
       <expandable #headers [expanded]="keyword && keyword.long=='headers'" (state)="searchKeywords($event ? 'headers' : null)" title="Headers">
        <!--   <expandable>
               <expandable>
