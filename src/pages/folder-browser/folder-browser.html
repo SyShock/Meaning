@@ -1,13 +1,21 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-label>{{path}}</ion-label>
-    <ion-buttons end>
-        <button ion-button clear (tap)="toggleSearch()">
-            <ion-icon color='black' name="search"></ion-icon>
-          </button>
+    <ion-buttons left>
+      <button ion-button clear icon-only (click)="goBack()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>{{path}}</ion-title>
+    <ion-buttons right>
+      <button ion-button clear (tap)="toggleSearch()">
+        <ion-icon color='black' name="search"></ion-icon>
+      </button>
       <button ion-button clear (click)="doPrompt()">
         <ion-icon name="add"></ion-icon>
+      </button>
+      <button *ngIf="templateMode" ion-button clear (click)="doPrompt()">
+          <ion-icon name="add"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -16,7 +24,7 @@
 
 <ion-content fullscreen padding>
   <!-- <ion-searchbar (input)="search()" [(ngModel)]="searchWords"></ion-searchbar> -->
-  <span *ngIf="!fileSelect">
+  <span *ngIf="!fileSelectMode">
     <ion-list>
       <button ion-item *ngIf="path != basePath" (click)="prevDir()">
         ..
@@ -33,10 +41,10 @@
     </ion-fab>
   </span>
 
-  <ion-grid *ngIf="fileSelect" text-center>
+  <ion-grid *ngIf="fileSelectMode" text-center>
     <ion-row align-items-start>
       <button ion-button clear col-2 *ngIf="path != basePath" (tap)="prevDir()">
-        <ion-icon  name="folder"></ion-icon>
+        <ion-icon name="folder"></ion-icon>
         <ion-label>..</ion-label>
       </button>
       <button ion-button clear col-2 *ngFor="let folder of folders" (tap)="goTo(folder)" (press)="openModal()">

@@ -94,10 +94,18 @@ page-home {
   .mathjax *{
     // all: unset;
   }
-  #wide {
-    [contentEditable=true]:empty:not(:focus):before{
-      content:attr(data-text)
+  .counter{
+      vertical-align: sub;
     }
+  .match{
+    background-color: invert($color: #000000);
+    color: invert($color: white);
+  }
+  [contentEditable=true]:empty:not(:focus):before{
+    content:attr(data-text);
+  }
+  #wide {
+
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 10px;
@@ -164,9 +172,7 @@ page-home {
     }
   }
   #small {
-    [contentEditable=true]:empty:not(:focus):before{
-      content:attr(data-text)
-    }
+  
     .swiper-slide {
       text-align: unset;
       display: -webkit-box;
@@ -210,6 +216,7 @@ page-home {
 
     #first-screen {
       font-family: "monospace";
+      
     }
     #second-screen {
       padding: 0;

@@ -28,11 +28,11 @@ export class HomePage {
   @ViewChild("output") output: any;
   @ViewChild("slider") slider: Slides;
   @ViewChild('searchBar') searchbar: any;
-  
+
   smallScreen: boolean;
   wideScreen: boolean;
 
-  textAreaContent: string = `<div data-text="Content"></div>`;
+  textAreaContent: string = ``;
 
   wordCounter: boolean;
   textFocused: boolean;
@@ -71,7 +71,7 @@ export class HomePage {
     private popoverCtrl: PopoverController,
     private keyboard: Keyboard
   ) {
-    
+
     this.events.unsubscribe("file-opened", r => this.onFileOpened(r));
     this.events.unsubscribe("to-save-file", () => this._saveFile());
     this.events.unsubscribe("to-save-file-as", () => this.showPrompt());
@@ -106,6 +106,12 @@ export class HomePage {
         this.slider.slideTo(1);
       });
     }
+
+    window.addEventListener('native.keyboardhide', (e) => {
+      // @ts-ignore 
+      e.preventDefault();
+          // alert('Keyboard height is: ' + e.keyboardHeight);
+      })
 
     this.onResize();
     this.colorViewScreen();
@@ -169,6 +175,7 @@ export class HomePage {
       for (let el = 0; el < lines.length; el++)
         lines[el].style.color = this.headerColor;
     }
+
   }
 
   render() {
@@ -243,7 +250,8 @@ export class HomePage {
     document.execCommand("insertText", false, text);
   }
 
-  toggleSearch() {
+  toggleSearch(e) {
+    if (e) e.preventDefault();
     this.searchMode = !this.searchMode;
     if (this.searchMode) {
       this.searchbar.setFocus();
@@ -277,9 +285,9 @@ export class HomePage {
         ptr = new RegExp(`${this.searchbar.value}`, "gi");
         return match.replace(ptr, _match => {
           this.matches++;
-          return `<span style="background: yellow" class="match ${
+          return `<span class="match" ${
             this.matches
-          }">${_match}</span>`;
+            }">${_match}</span>`;
         });
       }
     );
@@ -287,10 +295,11 @@ export class HomePage {
   }
   onSearchInput(e) {
     // console.log(e);
-    if (e.key == "F3") this.goTo({ forward: true });
-    else this.searchText();
+    if (e.key == "F3") this.goTo(null, { forward: true });
+    else { this.searchText(); }
   }
-  goTo({ forward }) {
+  goTo(e, { forward }) {
+    if (e) e.preventDefault();
     if (forward && this.matches > this.matchIndex) this.matchIndex++;
     else if (!forward && this.matchIndex > 0) this.matchIndex--;
     else this.matchIndex = 0;
@@ -348,11 +357,13 @@ export class HomePage {
     electron.remote.app.exit();
   }
 
-  undo() {
+  undo(e) {
+    e.preventDefault();
     document.execCommand("undo");
   }
 
-  redo() {
+  redo(e) {
+    e.preventDefault();
     document.execCommand("redo");
   }
 
@@ -360,7 +371,7 @@ export class HomePage {
     const theme = this.settings.getActiveTheme()
     console.log(theme)
     let prompt = this.alertCtrl.create({
-      cssClass: theme,      
+      cssClass: theme,
       title: `File will be saved at:`,
       subTitle: `${this.files.base}`,
       inputs: [
@@ -440,7 +451,7 @@ export class HomePage {
    * =============================================
    */
   onNewFile() {
-    this.input.nativeElement.innerHTML = `<div data-text="Content"></div>`;
+    this.input.nativeElement.innerHTML = ``;
     this.files.clearPath();
     this.files.openedFile = "";
     this.render();
@@ -449,7 +460,7 @@ export class HomePage {
   onKeyUp(e: KeyboardEvent) {
     // console.log(e);
     const range = document.getSelection();
-    if(!range.focusNode.parentNode) return;
+    if (!range.focusNode.parentNode) return;
     const el: any = range.focusNode.parentNode;
     if (el.classList && el.classList[0] === "match" && e.code.includes("Key")) {
       const parent = el.parentNode;
@@ -458,14 +469,14 @@ export class HomePage {
     } // best separate this block into a function
     // rerun to return hightlight?
     if (e.key == "F3") {
-      if (e.shiftKey) this.goTo({ forward: false });
-      else this.goTo({ forward: true });
+      if (e.shiftKey) this.goTo(null, { forward: false });
+      else this.goTo(null, { forward: true });
     }
     if (e.ctrlKey) {
       if (e.key === "S") this.showPrompt();
       else if (e.key === "s") this._saveFile();
 
-      if (e.key === "f") this.toggleSearch();
+      if (e.key === "f") this.toggleSearch(null);
       if (e.key === "i") this.wrapIn(1);
       if (e.key === "j") this.wrapIn(2);
       if (e.key === "q") this.appendIn(1);
@@ -499,7 +510,7 @@ export class HomePage {
   }
 
   onEditInput() {
-    if(this.searchMode) this.toggleSearch();
+    if (this.searchMode) this.toggleSearch(null);
     this.searchClear();
     this.hasChanged = true;
     this.render()

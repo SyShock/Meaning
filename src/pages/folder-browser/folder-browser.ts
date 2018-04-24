@@ -16,7 +16,10 @@ export class FolderBrowserPage {
 
 
   searchWords: string;
-  fileSelect: boolean;
+  fileSelectMode: boolean;
+
+  fileSelected:boolean;
+  templateMode: boolean;
 
   folders: Array<any> = [];
   files: Array<any> = [];
@@ -37,19 +40,25 @@ export class FolderBrowserPage {
 
   ionViewDidLoad() {
     this.menuCtrl.close();
-    this.fileSelect = this.navParams.get('fileSelect')
-    if (this.fileSelect) {
-      if (this.navParams.get('templates')) this.extFiles.jumpToDir(this.extFiles._base + '/Meaning/templates');
+    this.fileSelectMode = this.navParams.get('fileSelect')
+    if (this.fileSelectMode) {
+      this.templateMode = this.navParams.get('templates')
+      if (this.templateMode) {
+        this.extFiles.jumpToDir(this.extFiles._base + '/Meaning/templates')
+        this.events.publish('templates-opened')
+      }
       this.loadFilesAndDirs()
     }
     else this.loadList()
     console.log('ionViewDidLoad FolderBrowserPage');
     this.path = this.extFiles.base;
     this.basePath = this.extFiles._base;
+    this.fileSelected = false;
   }
   
   ionViewWillLeave(){
-    if(this.fileSelect) this.events.publish('menu-toggle')
+    if(this.fileSelectMode && !this.fileSelected) this.events.publish('menu-toggle')
+    if(this.templateMode) this.events.publish('templates-closed')
   }
 
   async loadList(){
@@ -86,6 +95,7 @@ export class FolderBrowserPage {
     let ret = {content: null, isTemplate: false}
     if (this.path.includes(`${this.extFiles.defaultAppLocation}/templates`)) ret.isTemplate = true;
     ret.content = await this.extFiles.openFile(fileName)
+    this.fileSelected = true
     this.events.publish('file-opened', ret)
     this.navCtrl.pop()
   }

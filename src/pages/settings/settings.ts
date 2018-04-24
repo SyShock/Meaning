@@ -7,7 +7,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  PopoverController
+  PopoverController,
+  ModalController
 } from "ionic-angular";
 import { Storage } from "@ionic/storage";
 
@@ -37,6 +38,7 @@ export class SettingsPage {
     public navParams: NavParams,
     private popoverCtrl: PopoverController,
     private settings: SettingsProvider,
+    private modalCtrl: ModalController,
     private storage: Storage
   ) {
     this.headerFontOptions = [
@@ -137,7 +139,8 @@ export class SettingsPage {
   }
 
   addProjectPath() {
-    this.navCtrl.push(FolderBrowserPage);
+    const modal = this.modalCtrl.create(FolderBrowserPage);
+    modal.present();
   }
 
   removeProjectPath(name) {

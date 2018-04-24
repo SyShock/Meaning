@@ -7,12 +7,14 @@
 <ion-header>
 
   <ion-navbar>
-    <!-- <button ion-button (click)="goBack()">
-      <ion-icon name="back"></ion-icon>
-    </button> -->
-    <ion-title>Settings</ion-title>
-  </ion-navbar>
+    <ion-buttons left>
+      <button ion-button clear icon-only item-end (click)="goBack()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
 
+    <ion-title end>Settings</ion-title>
+  </ion-navbar>
 </ion-header>
 
 
@@ -45,7 +47,7 @@
   </ion-item>
   <ion-item>
     <ion-label>Header Font</ion-label>
-    <ion-select item-end [placeholder]="headerFont"  (tap)="showPopOver($event, headerFontOptions, onHeaderFontChange)">
+    <ion-select item-end [placeholder]="headerFont" (tap)="showPopOver($event, headerFontOptions, onHeaderFontChange)">
       {{headerFont}}
     </ion-select>
   </ion-item>
