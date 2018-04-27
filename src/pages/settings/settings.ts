@@ -2,13 +2,14 @@ import { FolderBrowserPage } from "./../folder-browser/folder-browser";
 import { SettingsProvider } from "./../../providers/settings/settings";
 import { PopOver } from "./../../components/pop-over/pop-over";
 
-import { Component } from "@angular/core";
+import { Component, Renderer } from "@angular/core";
 import {
   IonicPage,
   NavController,
   NavParams,
   PopoverController,
-  ModalController
+  ModalController,
+  ViewController
 } from "ionic-angular";
 import { Storage } from "@ionic/storage";
 
@@ -39,6 +40,8 @@ export class SettingsPage {
     private popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private modalCtrl: ModalController,
+    private renderer: Renderer,
+    private viewCtrl: ViewController,
     private storage: Storage
   ) {
     this.headerFontOptions = [
@@ -119,6 +122,8 @@ export class SettingsPage {
 
   set _theme(value){
      this.theme = this.themes.filter((el) => el.value == value)[0].name;
+     this.viewCtrl.pageRef().nativeElement.classList.remove(this.settings.config.theme)
+     this.viewCtrl.pageRef().nativeElement.classList.add(value)
   }
 
   ionViewDidLoad() {
@@ -139,7 +144,8 @@ export class SettingsPage {
   }
 
   addProjectPath() {
-    const modal = this.modalCtrl.create(FolderBrowserPage);
+    const theme = this.settings.getActiveTheme();
+    const modal = this.modalCtrl.create(FolderBrowserPage, null,{ cssClass: theme });
     modal.present();
   }
 
