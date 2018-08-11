@@ -82,14 +82,15 @@
     </platform>
     <allow-navigation href="http://192.168.0.111:8100" />
     <allow-navigation href="http://192.168.0.108:8100" />
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.0.110:8100" />
     <plugin name="cordova-plugin-console" spec="^1.1.0" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
     <plugin name="cordova-plugin-file" spec="^4.3.3" />
     <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
     <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
     <allow-navigation href="http://192.168.0.182:8100" />
-    <engine name="ios" spec="^4.4.0" />
-    <engine name="android" spec="~6.4.0" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
+    <allow-navigation href="http://192.168.0.110:8100" />
+    <engine name="ios" spec="^4.4.0" />
+    <engine name="android" spec="6.4.0" />
 </widget>

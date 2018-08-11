@@ -6,6 +6,7 @@
     <ion-item no-lines [class.slide-in-top]="searchMode" [class.slide-out-top]="!searchMode">
       <ion-input id="search-bar" #searchBar type="search" (keyup)="onSearchInput($event)"></ion-input>
       <ion-buttons item-end>
+          <label class="counter">{{matchIndex+1}}/{{matches+1}}</label>
           <button ion-button clear icon (mousedown)="toggleSearch($event)">
               <ion-icon name="close"></ion-icon>
             </button>
@@ -15,22 +16,20 @@
         <button ion-button clear icon (mousedown)="goTo($event,{forward: true})">
           <ion-icon name="arrow-down"></ion-icon>
         </button>
-        <label class="counter">{{matchIndex+1}}/{{matches+1}}</label>
       </ion-buttons>`
     </ion-item>
   </div>
 
   <span *ngIf="!smallScreen" id="wide" [class]="previewMode">
-    <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="onEditInput()" data-text="Content">
-    </span>
+    <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="onEditInput()" data-text="Content"></span>
     <span #output id="second-screen" [style.fontSize]="textSize" [style.fontFamily]="textFont" [style.color]="textColor"></span>
   </span>
 
   <span *ngIf="smallScreen" id="small">
     <ion-slides #slider>
       <ion-slide>
-        <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="onEditInput()" data-text="Content">
-        </span>
+        <span #input id="first-screen" [class.notFocused]="textFocused" contenteditable="true" (input)="onEditInput()" data-text="Content"
+        (blur)="onBlur()"></span>
       </ion-slide>
       <ion-slide>
         <span id="second-screen" #output [style.fontSize]="textSize" [style.fontFamily]="textFont" ></span>
@@ -48,7 +47,7 @@
       <ion-icon color='black' name="close"></ion-icon>
     </button>
   </ion-buttons>
-  <ion-buttons *ngIf='smallScreen' [class.searchMode]="searchMode" class="top-right">
+  <ion-buttons *ngIf='smallScreen' [class.searchMode]="searchMode" [class.previewMode]="mobilePreviewMode" class="top-right">
     <button ion-button clear (mousedown)="toggleSearch()">
       <ion-icon color='black' name="search"></ion-icon>
     </button>

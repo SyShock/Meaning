@@ -55,6 +55,7 @@ page-home {
     left: 0;
     opacity: 0.5;
   }
+
   .top-right {
     backdrop-filter: blur(1px);
 
@@ -62,7 +63,14 @@ page-home {
     top: 0;
     right: 0;
     opacity: 0.5;
+    transition: opacity 0.2s;
+    
   }
+  .top-right.previewMode {
+    opacity: 0;
+    pointer-events: none;
+  }
+
 
   .bottom-right {
     backdrop-filter: blur(1px);
@@ -240,16 +248,21 @@ page-home {
     position: absolute;
     display: unset;
   }
-  #title-bar ion-item {
-    z-index: 100;
-    position: absolute;
-    width: 100%;
+  #title-bar{
+    .item-inner {
+      height: 0px;
+    }
+    ion-item {
+      z-index: 100;
+      position: absolute;
+      width: 100%;
 
-    -webkit-transform: translateY(-100px);
-    transform: translateY(-100px);
-    opacity: 0;
+      -webkit-transform: translateY(-100px);
+      transform: translateY(-100px);
+      opacity: 0;
+      // padding: 0;
+    }
   }
-
   .slide-in-top {
     animation: slide-in-top 0.2s both;
   }

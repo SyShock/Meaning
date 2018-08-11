@@ -20,7 +20,7 @@ export class ExternFilesProvider {
     this.checkPlatform();
   }
 
-  setErrorMessender(dep) {
+  setErrorMessenger(dep) {
     this._errorMessenger = dep;
   }
 

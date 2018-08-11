@@ -9,7 +9,8 @@ import {
   NavController,
   NavParams,
   PopoverController,
-  ToastController
+  ToastController,
+  MenuController
 } from "ionic-angular";
 import { PopUp } from "./home-view-popup";
 import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
@@ -47,6 +48,7 @@ export class HomePage {
   percentViewing: number;
 
   previewMode: string;
+  mobilePreviewMode: boolean = false;
   changed: boolean;
   parsedContent: string;
   isTemplate: boolean;
@@ -69,7 +71,8 @@ export class HomePage {
     private parser: MarkjaxProvider,
     private settings: SettingsProvider,
     private popoverCtrl: PopoverController,
-    private keyboard: Keyboard
+    private keyboard: Keyboard,
+    private menuCtrl: MenuController
   ) {
 
     this.events.unsubscribe("file-opened", r => this.onFileOpened(r));
@@ -98,12 +101,17 @@ export class HomePage {
     //experiment which input is best
     if (this.slider) {
       this.slider.ionSlideDidChange.subscribe(() => {
-        if (this.slider.getActiveIndex() === 0) this.keyboard.show();
-        else this.keyboard.close();
+        if (this.slider.getActiveIndex() === 0) {
+          this.keyboard.show();
+          this.mobilePreviewMode = false;
+        } else {
+          this.keyboard.close();
+          this.mobilePreviewMode = true;
+        }
       });
 
       this.keyboard.onKeyboardHide().subscribe(() => {
-        this.slider.slideTo(1);
+        // this.slider.slideTo(1);
       });
     }
 
@@ -112,10 +120,18 @@ export class HomePage {
       e.preventDefault();
           // alert('Keyboard height is: ' + e.keyboardHeight);
       })
-
-    this.onResize();
+      
     this.colorViewScreen();
-    this.render();
+    this.onResize();
+    // this.render();
+  }
+
+  onBlur() {
+    if (!this.mobilePreviewMode && !this.searchMode &&
+      (!this.menuCtrl.isAnimating() || !this.menuCtrl.isOpen()) ) {
+      const elInput = this.input.nativeElement;
+      elInput.focus();
+    }   
   }
 
   /**
@@ -181,7 +197,6 @@ export class HomePage {
   render() {
     const elInput = this.input.nativeElement;
     const elOutput = this.output.nativeElement;
-
     this.textAreaContent = elInput.innerHTML;
     this.parser.parse(elInput.innerText, elOutput);
     this.adjustHeight(elInput, elOutput);
@@ -451,16 +466,17 @@ export class HomePage {
    * =============================================
    */
   onNewFile() {
-    this.input.nativeElement.innerHTML = ``;
-    this.files.clearPath();
+    this.textAreaContent = '';
+    this.input.nativeElement.innerHTML = "";
     this.files.openedFile = "";
+    this.files.clearPath();
     this.render();
   }
 
   onKeyUp(e: KeyboardEvent) {
     // console.log(e);
     const range = document.getSelection();
-    if (!range.focusNode.parentNode) return;
+    if (!range.focusNode && !range.focusNode.parentNode) return;
     const el: any = range.focusNode.parentNode;
     if (el.classList && el.classList[0] === "match" && e.code.includes("Key")) {
       const parent = el.parentNode;
@@ -503,10 +519,15 @@ export class HomePage {
     else t = window;
 
     this.input.nativeElement.innerHTML = this.textAreaContent; //on smallScreen flag update and rerender would be best
-    if (t.innerWidth < 600) {
+    if (t.innerWidth < 600 && !this.smallScreen) {
       this.smallScreen = true;
-    } else this.smallScreen = false;
-    this.render();
+      this.render();
+
+    } else if (t.innerWidth > 600 && this.smallScreen){
+      this.smallScreen = false;
+      this.render();
+
+    }
   }
 
   onEditInput() {
@@ -517,7 +538,7 @@ export class HomePage {
   }
 
   onFileOpened(r) {
-
+    console.log("file opened")
     if (this.slider) this.slider.slideTo(1);
 
     this.isTemplate = r.isTemplate;
