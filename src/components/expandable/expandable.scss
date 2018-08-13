@@ -1,36 +1,31 @@
 $duration: 1s;
+$icon-duration: 0.2s;
 $maxHeight: 600px;
-
 expandable {
-    .expandable-header{
+    .expandable-header {
         cursor: pointer;
     }
-    .expandable-header .label{
+    .expandable-header .label {
         font-size: larger;
     }
-    .wrapper > .item {
-    }
-    .expanded > .item {
-    }
-    .wrapper > span {
-    }
-    .expanded > span {
-    }
-
+    .wrapper>.item {}
+    .expanded>.item {}
+    .wrapper>span {}
+    .expanded>span {}
     .wrapper {
         max-height: 0;
-        overflow:hidden;
-        
-        transition: max-height $duration ease; 
+        overflow: hidden;
+        transition: max-height $duration ease;
     }
-
-    .expanded {
+    .wrapper.expanded {
         max-height: $maxHeight;
         overflow: hidden;
-        
         transition: max-height $duration ease;
-        
     }
-
-
+    ion-icon:before {
+        transition: transform $icon-duration ease-out;
+    }
+    ion-icon.expanded:before {
+        transform: rotate(180deg);
+    }
 }

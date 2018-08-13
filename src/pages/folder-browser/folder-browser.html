@@ -6,10 +6,12 @@
         <ion-icon name="close"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-title>{{path}}</ion-title>
+    <ion-title *ngIf="!searchMode">{{path}}</ion-title>
+    <ion-input clearInput #searchbar *ngIf="searchMode" [(ngModel)]="searchWords" type="search" (input)="search($event)" (ionClear)="clearSearch($event)"></ion-input>
     <ion-buttons right>
       <button ion-button clear (tap)="toggleSearch()">
-        <ion-icon color='black' name="search"></ion-icon>
+        <ion-icon *ngIf="searchMode" color='black' name="close"></ion-icon>
+        <ion-icon *ngIf="!searchMode" color='black' name="search"></ion-icon>
       </button>
       <button ion-button clear (click)="doPrompt()">
         <ion-icon name="add"></ion-icon>
@@ -26,7 +28,7 @@
   <!-- <ion-searchbar (input)="search()" [(ngModel)]="searchWords"></ion-searchbar> -->
   <span *ngIf="!fileSelectMode">
     <ion-list>
-      <button ion-item *ngIf="path != basePath" (click)="prevDir()">
+      <button ion-item *ngIf="(path != basePath) && !templateMode" (click)="prevDir()">
         ..
       </button>
 
@@ -43,7 +45,7 @@
 
   <ion-grid *ngIf="fileSelectMode" text-center>
     <ion-row align-items-start>
-      <button ion-button clear col-2 *ngIf="path != basePath" (tap)="prevDir()">
+      <button ion-button clear col-2 *ngIf="(path != basePath) && !templateMode" (tap)="prevDir()">
         <ion-icon name="folder"></ion-icon>
         <ion-label>..</ion-label>
       </button>

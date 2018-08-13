@@ -1,8 +1,14 @@
+import { ViewChildren } from '@angular/core';
 import { SettingsProvider } from './../../providers/settings/settings';
 import { HomePage } from './../home/home';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, Events, MenuController } from 'ionic-angular';
 import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
+
+interface IBackup {
+  folders?: any,
+  files?: any
+}
 
 @IonicPage()
 @Component({
@@ -13,10 +19,13 @@ import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
   }
 })
 export class FolderBrowserPage {
+  @ViewChildren('searchbar') searchbar: any;
 
 
   searchWords: string;
   fileSelectMode: boolean;
+
+  searchMode: boolean = false;
 
   fileSelected:boolean;
   templateMode: boolean;
@@ -24,6 +33,7 @@ export class FolderBrowserPage {
   folders: Array<any> = [];
   files: Array<any> = [];
   foldersBackup: Array<any> = [];
+  filesBackup: Array<any> = [];
   path: string;
   basePath: string;
 
@@ -55,6 +65,14 @@ export class FolderBrowserPage {
     this.basePath = this.extFiles._base;
     this.fileSelected = false;
   }
+
+  ionViewDidEnter() {
+    this.searchbar.changes.subscribe((input) => {
+      if (input.length > 0) {
+        input.first.setFocus();
+      }
+    });
+  }
   
   ionViewWillLeave(){
     if(this.fileSelectMode && !this.fileSelected) this.events.publish('menu-toggle')
@@ -64,7 +82,9 @@ export class FolderBrowserPage {
   async loadList(){
     this.folders.splice(0, this.folders.length)
     this.folders = this.folders.concat(await this.extFiles.listDirs())
-    this.initBackUp(this.folders)
+    this.initBackUp({
+      folders: this.folders
+    })
   }
 
   async loadFilesAndDirs(){
@@ -72,12 +92,21 @@ export class FolderBrowserPage {
     this.files.splice(0, this.files.length)
     this.folders = this.folders.concat(await this.extFiles.listDirs())
     this.files = this.files.concat(await this.extFiles.listFiles(['.md', '.txt']))
-    this.initBackUp(this.folders)
+    this.initBackUp({
+      folders: this.folders,
+      files: this.files
+    })
   }
 
-  initBackUp(arr){
-    this.foldersBackup.splice(0, this.folders.length)
-    this.foldersBackup.concat(arr)
+  initBackUp({ folders = null, files = null }: IBackup){
+    if (folders){
+      this.foldersBackup.splice(0, this.folders.length)
+      this.foldersBackup = [...folders]
+    }
+    if (files){
+      this.filesBackup.splice(0, this.files.length)
+      this.filesBackup = [...files]
+    }
   }
 
   async select(){
@@ -165,13 +194,29 @@ export class FolderBrowserPage {
 
   }
 
-  search(){
-    console.log(this.foldersBackup)
+  search(e){
+    this.searchWords = e.target.value.toLowerCase()
     this.folders = this.foldersBackup.filter((el)=>{
-      return el.search(this.searchWords) > 0
+      el = el.toLowerCase()
+      return el.includes(this.searchWords)
     })
-    console.log(this.folders)
-    if (this.folders.length === 0) this.folders = this.foldersBackup
+    this.files = this.filesBackup.filter((el) => {
+      el = el.toLowerCase()
+      return el.includes(this.searchWords)
+    })
+    if (!this.searchWords){
+      this.files = this.filesBackup
+      this.folders = this.foldersBackup
+    } 
+  }
+  clearSearch(){
+    this.searchWords = ""
+    this.files = this.filesBackup
+    this.folders = this.foldersBackup
   }
 
+  toggleSearch(){
+    this.searchMode = !this.searchMode
+    this.clearSearch()
+  }
 }
