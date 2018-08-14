@@ -4,7 +4,6 @@ import { MarkjaxProvider } from "./../../providers/markjax/markjax";
 import { Component, ViewChild } from "@angular/core";
 import {
   AlertController,
-  Events,
   IonicPage,
   NavController,
   NavParams,
@@ -14,6 +13,7 @@ import {
 } from "ionic-angular";
 import { PopUp } from "./home-view-popup";
 import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
+import { EventsProvider, EventNames } from "../../providers/events/events";
 import { Slides } from "ionic-angular";
 import { Keyboard } from "@ionic-native/keyboard";
 
@@ -65,7 +65,7 @@ export class HomePage {
     public navCtrl: NavController,
     private navParams: NavParams,
     private files: ExternFilesProvider,
-    private events: Events,
+    private events: EventsProvider,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private parser: MarkjaxProvider,
@@ -75,17 +75,12 @@ export class HomePage {
     private menuCtrl: MenuController
   ) {
 
-    this.events.unsubscribe("file-opened", r => this.onFileOpened(r));
-    this.events.unsubscribe("to-save-file", () => this._saveFile());
-    this.events.unsubscribe("to-save-file-as", () => this.showPrompt());
-    this.events.unsubscribe("config-loaded", () => this.ionViewDidEnter());
-    this.events.unsubscribe("new-file", () => this.onNewFile());
+    this.events.once(EventNames.fileOpened, r => this.onFileOpened(r));
+    this.events.once(EventNames.fileToSave, () => this._saveFile());
+    this.events.once(EventNames.fileToSaveAs, () => this.showPrompt());
+    this.events.once(EventNames.configLoaded, () => this.ionViewDidEnter());
+    this.events.once(EventNames.fileNew, () => this.onNewFile());
 
-    this.events.subscribe("file-opened", r => this.onFileOpened(r));
-    this.events.subscribe("to-save-file", () => this._saveFile());
-    this.events.subscribe("to-save-file-as", () => this.showPrompt());
-    this.events.subscribe("config-loaded", () => this.ionViewDidEnter());
-    this.events.subscribe("new-file", () => this.onNewFile());
     // this.findInPage = new FindInPage();
     // console.log(this.findInPage)
   }
@@ -384,7 +379,7 @@ export class HomePage {
 
   showPrompt() {
     const theme = this.settings.getActiveTheme()
-    console.log(theme)
+    this.events.lock(EventNames.fileToSaveAs)
     let prompt = this.alertCtrl.create({
       cssClass: theme,
       title: `File will be saved at:`,
@@ -399,7 +394,7 @@ export class HomePage {
         {
           text: "Cancel",
           handler: data => {
-            this.events.publish("to-save-file-canceled");
+            this.events.publish(EventNames.fileToSaveCanceled);
           }
         },
         // {
@@ -419,6 +414,7 @@ export class HomePage {
     prompt.present();
     prompt.onDidDismiss(r => {
       if (r.fileName) {
+        this.events.publish(EventNames.fileToSaveCanceled)
         this.saveFile(r.fileName);
         this.files.openedFile = r.fileName;
       }
@@ -448,7 +444,7 @@ export class HomePage {
   _saveFile() {
     const fileName = this.files.openedFile;
     if (fileName && fileName !== "") this.saveFile(fileName);
-    else this.showPrompt();
+    else this.events.publish(EventNames.fileToSaveAs);
   }
 
   saveFile(r) {

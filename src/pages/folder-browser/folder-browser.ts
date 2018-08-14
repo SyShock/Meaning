@@ -4,6 +4,7 @@ import { HomePage } from './../home/home';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, Events, MenuController } from 'ionic-angular';
 import { ExternFilesProvider } from '../../providers/extern-files/extern-files'
+import { EventsProvider, EventNames } from '../../providers/events/events';
 
 interface IBackup {
   folders?: any,
@@ -42,11 +43,11 @@ export class FolderBrowserPage {
     public navParams: NavParams,
     private extFiles: ExternFilesProvider,
     private alertCtrl: AlertController,
-    private events: Events,
+    private events: EventsProvider,
     private menuCtrl: MenuController,    
     private settings: SettingsProvider) {
-
-  }
+  
+    }
 
   ionViewDidLoad() {
     this.menuCtrl.close();
@@ -55,7 +56,7 @@ export class FolderBrowserPage {
       this.templateMode = this.navParams.get('templates')
       if (this.templateMode) {
         this.extFiles.jumpToDir(this.extFiles._base + '/Meaning/templates')
-        this.events.publish('templates-opened')
+        this.events.publish(EventNames.templatesLoaded)
       }
       this.loadFilesAndDirs()
     }
@@ -75,8 +76,8 @@ export class FolderBrowserPage {
   }
   
   ionViewWillLeave(){
-    if(this.fileSelectMode && !this.fileSelected) this.events.publish('menu-toggle')
-    if(this.templateMode) this.events.publish('templates-closed')
+    if(this.fileSelectMode && !this.fileSelected) this.events.publish(EventNames.menuToggled)
+    if(this.templateMode) this.events.publish(EventNames.templatesClosed)
   }
 
   async loadList(){
@@ -116,8 +117,8 @@ export class FolderBrowserPage {
     this.settings.addPath(dirName, this.path)
     this.getMetadata(r)
     this.navCtrl.setRoot(HomePage)
-    this.events.publish('bookmark-selected')
-    this.events.publish('menu-toggle')
+    this.events.publish(EventNames.bookmarkSelected)
+    this.events.publish(EventNames.menuToggled)
   }
 
   async openFile(fileName){
@@ -125,7 +126,7 @@ export class FolderBrowserPage {
     if (this.path.includes(`${this.extFiles.defaultAppLocation}/templates`)) ret.isTemplate = true;
     ret.content = await this.extFiles.openFile(fileName)
     this.fileSelected = true
-    this.events.publish('file-opened', ret)
+    this.events.publish(EventNames.fileOpened, ret)
     this.navCtrl.pop()
   }
 

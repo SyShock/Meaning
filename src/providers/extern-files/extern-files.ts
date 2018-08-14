@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Platform, Events } from 'ionic-angular';
 import { Entry as IEntry, FileEntry, IFile, IWriteOptions } from '@ionic-native/file'
+import { EventsProvider, EventNames } from '../events/events';
 
 @Injectable()
 export class ExternFilesProvider {
@@ -15,7 +16,7 @@ export class ExternFilesProvider {
   openedFile: string;
   defaultAppLocation: string = "Meaning";
 
-  constructor(private platform: Platform, private events: Events) {
+  constructor(private platform: Platform, private events: EventsProvider) {
     console.log("Hello ExternFilesProvider Provider");
     this.checkPlatform();
   }
@@ -299,7 +300,7 @@ export class ExternFilesProvider {
   }
   selectDir() {
     this.selectedDirPath = this.base;
-    this.events.publish("folder-selected");
+    this.events.publish(EventNames.fileSelected);
   }
 
   clearPath() {
@@ -370,7 +371,7 @@ export class ExternFilesProvider {
   ): any {}
 
   onAfterSaveFile() {
-    this.events.publish("file-saved");
+    this.events.publish(EventNames.fileSaved);
   }
   onBeforeOpenFile(fileName: string) {
     this.openedFile = fileName.replace(/\.\w+$/g, ""); //remove suffix

@@ -11,6 +11,7 @@ import { FolderBrowserPage } from '../pages/folder-browser/folder-browser';
 import { SettingsPage } from './../pages/settings/settings';
 
 import jsPDF from 'jspdf'
+import { EventsProvider, EventNames } from '../providers/events/events';
 
 interface IElement {
   title: string,
@@ -30,6 +31,8 @@ interface IKeyWord {
   long: string,
   short: string
 }
+
+let ev;
 
 //short and long in an object, instead of keywords or keyword as hash to the 'path' in backups
 
@@ -81,7 +84,7 @@ export class MyApp {
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
     private extFiles: ExternFilesProvider,
-    private events: Events,
+    private events: EventsProvider,
     private menu: MenuToggle,
     private alertCtrl: AlertController,
     public settings: SettingsProvider,
@@ -93,21 +96,45 @@ export class MyApp {
     this.initializeApp();
     this.storage.get("config").then(res => {
       if (res) this.settings.initConfig(JSON.parse(res));
-      this.events.publish("config-loaded")
+      this.events.publish(EventNames.configLoaded)
     });
 
     // used for an example of ngFor and navigation
     //about as an alert message
-    this.events.subscribe("config-loaded", (data) => {
+    this.events.once(EventNames.configLoaded, (data) => {
       this.state.main = [
-        { title: 'New', element: { do: () => { this.nav.setRoot(HomePage); this.events.publish('new-file') } } },
-        { title: 'Open File', element: { do: () => { this.openPage({ component: FolderBrowserPage, params: { 'fileSelect': true } }) } } },
-        { title: 'Save', element: { do: () => { this.menuCtrl.close(); this.events.publish('to-save-file') } } },
-        { title: 'Save As', element: { do: () => { this.menuCtrl.close(); this.events.publish('to-save-file-as') } } },
-        { title: 'Open Templates', element: { do: () => { this.openPage({ component: FolderBrowserPage, params: { 'fileSelect': true, 'templates': true } }) } } },
-        { title: "Settings", element: { do: () => { this.menuCtrl.close(); this.openPage({ component: SettingsPage }) } } },
-        { title: "Export", element: { do: () => { this.showExportMenu() } } },
-        { title: "About", element: { do: () => { this.showAbout() } } }
+        { 
+          title: 'New', 
+          element: { do: () => { this.nav.setRoot(HomePage); this.events.publish(EventNames.fileNew) } } 
+        },
+        { 
+          title: 'Open File', 
+          element: { do: () => { this.openPage({ component: FolderBrowserPage, params: { 'fileSelect': true } }) } } 
+        },
+        { 
+          title: 'Save', 
+          element: { do: () => { this.menuCtrl.close(); this.events.publish(EventNames.fileToSave) } } 
+        },
+        { 
+          title: 'Save As', 
+          element: { do: () => { this.menuCtrl.close(); this.events.publish(EventNames.fileToSaveAs) } } 
+        },
+        { 
+          title: 'Open Templates', 
+          element: { do: () => { this.openPage({ component: FolderBrowserPage, params: { 'fileSelect': true, 'templates': true } }) } } 
+        },
+        { 
+          title: "Settings", 
+          element: { do: () => { this.menuCtrl.close(); this.openPage({ component: SettingsPage }) } } 
+        },
+        { 
+          title: "Export", 
+          element: { do: () => { this.showExportMenu() } } 
+        },
+        { 
+          title: "About", 
+          element: { do: () => { this.showAbout() } } 
+        }
       ];
       this.backupState.main = this.state.main.concat();
 
@@ -115,18 +142,18 @@ export class MyApp {
       this.state.bookmark = bookmark.map((el) => { return { title: el.name[0], element: el } });
       this.backupState.bookmark = this.state.bookmark.concat();
     })
-    this.events.subscribe('created-heading', (data) => {
+    this.events.once(EventNames.headingLoaded, (data) => {
       this.backupState.headers = data.map((el) => { return { title: el.content, element: el } })
       this.state.headers = this.backupState.headers.concat();
     })
 
-    this.events.subscribe('templates-opened',()=>{
+    this.events.once(EventNames.templatesLoaded, () => {
       const index = this.state.main.findIndex(el => el.title === 'Open Templates')
       this.state.main.splice(index+1, 0, {
-        title: 'Save As Template', element: { do: () => { this.menuCtrl.close(); this.events.publish('to-save-file-as') } } }
+        title: 'Save As Template', element: { do: () => { this.menuCtrl.close(); this.events.publish(EventNames.fileToSaveAs) } } }
       )
     })
-    this.events.subscribe('templates-closed',()=>{
+    this.events.once(EventNames.templatesClosed, () => {
       const index = this.state.main.findIndex(el => el.title === 'Save As Template')
       this.state.main.splice(index, 1);
     })
@@ -143,8 +170,14 @@ export class MyApp {
         });
       }
       if (this.platform.is('cordova')) {
-        this.events.subscribe('file-saved', () => this.showedAlert = false)
-        this.events.subscribe('to-save-file-canceled', () => this.showedAlert = false)
+        this.events.once(EventNames.fileSaved, () => {
+          this.events.unlock(EventNames.fileToSaveAs) 
+          this.showedAlert = false
+        })
+        this.events.once(EventNames.fileToSaveCanceled, () => {
+          this.events.unlock(EventNames.fileToSaveAs)
+          this.showedAlert = false
+        })
 
         const _navigator: any = navigator
         _navigator.app.overrideButton("menubutton", true);
@@ -156,7 +189,7 @@ export class MyApp {
           if (this.nav.length() === 1) {
             if (!this.showedAlert) {
               console.log('prompting')
-              this.events.publish('to-save-file')
+              this.events.publish(EventNames.fileToSave)
             } else {
               this.platform.exitApp()
             }
@@ -165,13 +198,14 @@ export class MyApp {
         });
       }
 
-      this.events.subscribe('folder-selected', () => {
+      this.events.once(EventNames.fileToSaveCanceled, () => {
+        this.events.unlock(EventNames.fileToSaveAs)
         this.loadFiles()
       })
-      this.events.subscribe('bookmark-selected', () => {
+      this.events.once(EventNames.bookmarkSelected, () => {
         this.getBookmarks()
       })
-      this.events.subscribe('menu-toggle', () => {
+      this.events.once(EventNames.menuToggled, () => {
         this.menu.toggle()
         setTimeout(() => {
           this.searchbar.setFocus();
@@ -217,7 +251,7 @@ export class MyApp {
     let ret = { content: null, isTemplate: false }
     if (this.extFiles.base.includes(`${this.extFiles.defaultAppLocation}/templates`)) ret.isTemplate = true;
     ret.content = await this.extFiles.openFile(fileName.title)
-    this.events.publish('file-opened', ret)
+    this.events.publish(EventNames.fileOpened, ret)
     // this.navCtrl.pop()
   }
   async loadFiles() {
@@ -241,7 +275,7 @@ export class MyApp {
   onKeyUp(e) {
     if (e.ctrlKey) {
       if (e.key === 'b') {
-        this.events.publish('menu-toggle')
+        this.events.publish(EventNames.menuToggled)
       }
       if (e.key === 'o') {
         this.nav.push(FolderBrowserPage, { 'fileSelect': true })
@@ -250,8 +284,10 @@ export class MyApp {
     }
   }
   onExit() {
-    this.events.publish('to-save-file')
-    this.events.subscribe('file-saved', () => { })
+    this.events.publish(EventNames.fileToSave)
+    this.events.once(EventNames.fileSaved, () => {
+       this.events.unlock(EventNames.fileToSaveAs) 
+      })
   }
 
   clearKeyword() {

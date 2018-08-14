@@ -2,6 +2,7 @@ import { Events } from 'ionic-angular';
 import { Injectable } from "@angular/core";
 import markjax from "markjax";
 import marked from "marked";
+import { EventsProvider, EventNames } from '../events/events';
 /*
   Generated class for the MarkjaxProvider provider.
 
@@ -20,7 +21,7 @@ export class MarkjaxProvider {
   settings: Object;
   headers : Array<IHeading> = [];
 
-  constructor(private events: Events) {
+  constructor(private events: EventsProvider) {
     console.log("Hello MarkjaxProvider Provider");
     var renderer = new marked.Renderer();
     renderer.listitem = text => {
@@ -57,7 +58,7 @@ export class MarkjaxProvider {
 
   parse(source, dest) {
     markjax(source, dest, this.settings);
-    this.events.publish('created-heading', this.headers.concat())
+    this.events.publish(EventNames.headingLoaded, this.headers.concat())
     this.headers = [];
   }
 }

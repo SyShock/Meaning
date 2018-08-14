@@ -17,6 +17,7 @@ import { ExternFilesProvider } from '../providers/extern-files/extern-files';
 import { FolderBrowserModule } from "../pages/folder-browser/folder-browser.module";
 import { MarkjaxProvider } from '../providers/markjax/markjax';
 import { SettingsProvider } from '../providers/settings/settings';
+import { EventsProvider } from '../providers/events/events';
 
 @NgModule({
   declarations: [MyApp, ExpandableComponent],
@@ -40,7 +41,8 @@ import { SettingsProvider } from '../providers/settings/settings';
     MarkjaxProvider,
     MenuToggle,
     SettingsProvider,
-    MarkjaxProvider
+    MarkjaxProvider,
+    EventsProvider
   ]
 })
 export class AppModule {}
