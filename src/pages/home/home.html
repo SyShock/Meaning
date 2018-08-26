@@ -1,9 +1,14 @@
-<ion-content fullscreen (document:keyup)="onKeyUp($event)" (document:selectionchange)="onSelectionChange($event)" (window:resize)="onResize($event)">
+<ion-content fullscreen 
+(document:keyup)="onKeyUp($event)" 
+(document:selectionchange)="onSelectionChange($event)" 
+(window:resize)="onResize($event)"
+(document:contextmenu)="onContextMenu($event)"
+>
 
   <!-- <templates #templates></templates> -->
 
   <div id="title-bar">
-    <ion-item no-lines [class.slide-in-top]="searchMode" [class.slide-out-top]="!searchMode">
+    <ion-item no-lines [class.fade-in]="searchMode" [class.fade-out]="!searchMode">
       <ion-input id="search-bar" #searchBar type="search" (keyup)="onSearchInput($event)"></ion-input>
       <ion-buttons item-end>
           <label class="counter">{{matchIndex+1}}/{{matches+1}}</label>
@@ -16,8 +21,10 @@
         <button ion-button clear icon (mousedown)="goTo($event,{forward: true})">
           <ion-icon name="arrow-down"></ion-icon>
         </button>
-      </ion-buttons>`
+      </ion-buttons>
     </ion-item>
+    <toolbar *ngIf="smallScreen" [inSelection]="textSelected && !searchMode"></toolbar>
+
   </div>
 
   <span *ngIf="!smallScreen" id="wide" [class]="previewMode">

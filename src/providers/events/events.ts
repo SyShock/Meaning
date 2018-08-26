@@ -15,7 +15,10 @@ const EventNames = {
   menuToggled: 'menu-toggled',
   fileOpened: 'file-opened',
   fileNew: 'file-new',
-  fileSelected: 'file-selected'
+  fileSelected: 'file-selected',
+  textChanged: 'text-changed',
+  viewChanged: 'view-changed',
+  settingsChanged: 'settings-changed'
 };
 
 @Injectable()

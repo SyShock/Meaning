@@ -1,0 +1,46 @@
+<div [class.fade-in]="inSelection" [class.fade-out]="!inSelection">
+  <ion-item no-lines>
+    <button ion-button clear (mousedown)="increaseHeader()">
+      <label>h up</label>
+    </button>
+    <button ion-button clear (mousedown)="decreaseHeader()">
+      <label>h down</label>
+    </button>
+    <button ion-button clear (mousedown)="bold()">
+      <strong>b</strong>
+    </button>
+    <button ion-button clear (mousedown)="italic()">
+      <i>i</i>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <sub>sub</sub>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <sup>sup</sup>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <del>st</del>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <label>-</label>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <label>1.</label>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <label>></label>
+    </button>
+    <button ion-button clear (mousedown)="code()">
+      <label>code</label>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <label>img</label>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <label>link</label>
+    </button>
+    <button ion-button clear (mousedown)="function()">
+      <label>---</label>
+    </button>
+  </ion-item>
+</div>

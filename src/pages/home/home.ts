@@ -1,7 +1,7 @@
 import { SettingsProvider } from "./../../providers/settings/settings";
 import { TemplatesComponent } from "./../../components/templates/templates";
-import { MarkjaxProvider } from "./../../providers/markjax/markjax";
-import { Component, ViewChild } from "@angular/core";
+import { MarkjaxProvider, AppendModes, WrapModes } from "./../../providers/markjax/markjax";
+import { Component, ViewChild, ChangeDetectorRef } from "@angular/core";
 import {
   AlertController,
   IonicPage,
@@ -9,9 +9,10 @@ import {
   NavParams,
   PopoverController,
   ToastController,
-  MenuController
+  MenuController,
+  Popover
 } from "ionic-angular";
-import { PopUp } from "./home-view-popup";
+import { PopUp, ViewModes } from "./home-view-popup";
 import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
 import { EventsProvider, EventNames } from "../../providers/events/events";
 import { Slides } from "ionic-angular";
@@ -44,6 +45,8 @@ export class HomePage {
   textColor: string;
   textSize: string;
 
+  textSelected: boolean = false;
+
   wordCount: number;
   percentViewing: number;
 
@@ -53,7 +56,7 @@ export class HomePage {
   parsedContent: string;
   isTemplate: boolean;
 
-  matches: number;
+  matches: number = -1;
   matchIndex: number = -1;
   searchMode: boolean = false;
 
@@ -72,7 +75,8 @@ export class HomePage {
     private settings: SettingsProvider,
     private popoverCtrl: PopoverController,
     private keyboard: Keyboard,
-    private menuCtrl: MenuController
+    private menuCtrl: MenuController,
+    private changeDetector: ChangeDetectorRef
   ) {
 
     this.events.once(EventNames.fileOpened, r => this.onFileOpened(r));
@@ -80,20 +84,14 @@ export class HomePage {
     this.events.once(EventNames.fileToSaveAs, () => this.showPrompt());
     this.events.once(EventNames.configLoaded, () => this.ionViewDidEnter());
     this.events.once(EventNames.fileNew, () => this.onNewFile());
+    this.events.once(EventNames.textChanged, () => this.render());
+    this.events.once(EventNames.settingsChanged, () => this.getSettingsConfig());
 
     // this.findInPage = new FindInPage();
-    // console.log(this.findInPage)
   }
 
   ionViewDidEnter() {
-    this.headerColor = this.settings.getHeaderColor();
-    this.headerFont = this.settings.getHeaderFont();
-    this.textSize = this.settings.getTextSize();
-    this.textFont = this.settings.getTextFont();
-    this.textColor = this.settings.getTextColor();
-    this.textFocused = this.settings.getTextFocus();
-
-    //experiment which input is best
+    this.getSettingsConfig();
     if (this.slider) {
       this.slider.ionSlideDidChange.subscribe(() => {
         if (this.slider.getActiveIndex() === 0) {
@@ -102,6 +100,7 @@ export class HomePage {
         } else {
           this.keyboard.close();
           this.mobilePreviewMode = true;
+          this.textSelected = false;
         }
       });
 
@@ -111,14 +110,21 @@ export class HomePage {
     }
 
     window.addEventListener('native.keyboardhide', (e) => {
-      // @ts-ignore 
       e.preventDefault();
-          // alert('Keyboard height is: ' + e.keyboardHeight);
-      })
+    })
       
     this.colorViewScreen();
     this.onResize();
     // this.render();
+  }
+
+  getSettingsConfig(){
+    this.headerColor = this.settings.getHeaderColor();
+    this.headerFont = this.settings.getHeaderFont();
+    this.textSize = this.settings.getTextSize();
+    this.textFont = this.settings.getTextFont();
+    this.textColor = this.settings.getTextColor();
+    this.textFocused = this.settings.getTextFocus();
   }
 
   onBlur() {
@@ -135,15 +141,9 @@ export class HomePage {
    * ===================================
    */
 
-  wrapInDivs(r) {
+  wrapInParagraph(r: string) {
     let string: string;
-    string = "<div>" + r.replace(/\n/g, "<br></div><div>");
-    return string;
-  }
-
-  _wrapInDivs(r) {
-    let string: string;
-    string = r.replace(/\n/g, "<br></div><div>");
+    string = "<p>" + r.replace(/\n/g, "</p><p>");
     return string;
   }
 
@@ -151,7 +151,7 @@ export class HomePage {
     this.wordCount = text.length !== 0 ? text.match(/([a-zA-Z])+/g).length : 0;
   }
 
-  adjustHeight(elInput, elOutput) {
+  adjustHeight(elInput: HTMLElement, elOutput: HTMLElement) {
     let currentHeight =
       elInput.scrollHeight > elOutput.scrollHeight
         ? elInput.scrollHeight
@@ -160,17 +160,18 @@ export class HomePage {
       currentHeight > document.body.clientHeight
         ? currentHeight
         : document.body.clientHeight;
-
+    //@ts-ignore
     elInput.style = "height: " + currentHeight + "px";
 
     // a bit overboard but works for now
-    let temp: any = Array.from(document.querySelectorAll("ion-slides"));
+    let temp: Array<HTMLElement> = Array.from(document.querySelectorAll("ion-slides"));
+    //@ts-ignore
     for (let el of temp) el.style = "height: " + currentHeight + "px";
   }
 
   colorViewScreen() {
     document.getElementById("second-screen").style.color = this.textColor;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 7; i++) {
       const headers: any = document
         .getElementById("second-screen")
         .querySelectorAll("h" + i);
@@ -207,65 +208,12 @@ export class HomePage {
     if (parent) parent.classList.add("focused");
   }
 
-  appendIn(mode) {
-    let text = window.getSelection().toString();
-    let wrap;
-    switch (mode) {
-      case 1:
-        wrap = `>`;
-        break;
-      case 2:
-        wrap = `-`;
-        break;
-      case 3:
-        wrap = `#`;
-        break;
-      default:
-        break;
-    }
-    text = `${wrap} ${text}`;
-    document.execCommand("insertText", false, text);
-  }
-
-  wrapIn(mode) {
-    let text = window.getSelection().toString();
-    let wrap;
-    switch (mode) {
-      case 1:
-        wrap = `*`;
-        break;
-      case 2:
-        wrap = `**`;
-        break;
-      case 3:
-        wrap = `~~`;
-        break;
-      case 4:
-        wrap = "`";
-        break;
-      case 5:
-        wrap = "```";
-        break;
-      default:
-        break;
-    }
-    text = `${wrap}${text}${wrap}`;
-    document.execCommand("insertText", false, text);
-  }
-
-  wrapInCode() {
-    let text = window.getSelection().toString();
-    let wrap = "```";
-    text = `\n${wrap}\n${text}\n${wrap}`;
-    document.execCommand("insertText", false, text);
-  }
-
   toggleSearch(e) {
     if (e) e.preventDefault();
     this.searchMode = !this.searchMode;
     if (this.searchMode) {
       this.searchbar.setFocus();
-      const length = this.searchbar.value.length;
+      const length = this.searchbar.value.length || 0;
       //@ts-ignore
       document.getElementById('search-bar').children[0].setSelectionRange(length, length);
       this.searchText();
@@ -301,10 +249,8 @@ export class HomePage {
         });
       }
     );
-    // console.log(a, e, pattern)
   }
   onSearchInput(e) {
-    // console.log(e);
     if (e.key == "F3") this.goTo(null, { forward: true });
     else { this.searchText(); }
   }
@@ -341,17 +287,18 @@ export class HomePage {
     let popover = this.popoverCtrl.create(
       PopUp,
       {
-        callback: this.switchViews.bind(this)
         // posX: e.pointers[0].pageX,
         // posY: e.pointers[0].pageY
       },
       { cssClass: this.settings.getActiveTheme() }
     );
+    this.events.once(EventNames.viewChanged, (mode) => this.switchViews(mode, popover));
+
 
     popover.present({ direction: "down", ev: e });
   }
 
-  showToast(message) {
+  showToast(message: string) {
     const toast = this.toastCtrl.create({
       message: message,
       position: "top",
@@ -421,24 +368,25 @@ export class HomePage {
     });
   }
 
-  switchViews(value?) {
+  switchViews(value, popover: Popover) {
     switch (value) {
-      case 1:
+      case ViewModes.NARROW_EDIT:
         this.previewMode = "narrowEditView";
         break;
-      case 2:
+      case ViewModes.WIDE_EDIT:
         this.previewMode = "wideEditView";
         break;
-      case 3:
+      case ViewModes.NARROW_PREVIEW:
         this.previewMode = "narrowPreview";
         break;
-      case 4:
+      case ViewModes.WIDE_PREVIEW:
         this.previewMode = "widePreview";
         break;
       default:
         this.previewMode = "";
         break;
     }
+    popover.dismiss();
   }
 
   _saveFile() {
@@ -489,19 +437,18 @@ export class HomePage {
       else if (e.key === "s") this._saveFile();
 
       if (e.key === "f") this.toggleSearch(null);
-      if (e.key === "i") this.wrapIn(1);
-      if (e.key === "j") this.wrapIn(2);
-      if (e.key === "q") this.appendIn(1);
-      if (e.key === "l") this.appendIn(2);
-      if (e.key === "h") this.appendIn(3);
+      if (e.key === "i") this.parser.wrap(WrapModes.ITALIC);
+      if (e.key === "j") this.parser.wrap(WrapModes.BOLD);
+      if (e.key === "q") this.parser.append(AppendModes.QUOTE);
+      if (e.key === "l") this.parser.append(AppendModes.BULLET);
+      if (e.key === "h") this.parser.append(AppendModes.HEADER);
     }
-    if (e.ctrlKey && e.altKey && e.key === "u") this.wrapIn(3);
-    if (e.ctrlKey && e.key === "k") this.wrapIn(4);
-    if (e.ctrlKey && e.key === "K") this.wrapInCode();
+    if (e.ctrlKey && e.altKey && e.key === "u") this.parser.wrap(WrapModes.UNDERLINE);
+    if (e.ctrlKey && e.key === "k") this.parser.wrap(WrapModes.CODE);
+    if (e.ctrlKey && e.key === "K") this.parser.wrap(WrapModes.CODE_BLOCK);
   }
 
   onTextInput() {
-
     const input: HTMLElement = this.input.nativeElement;
     const regex = new RegExp(`/(${this.searchText})+/g`);
     const array = input.innerHTML.match(regex);
@@ -534,11 +481,9 @@ export class HomePage {
   }
 
   onFileOpened(r) {
-    console.log("file opened")
     if (this.slider) this.slider.slideTo(1);
-
     this.isTemplate = r.isTemplate;
-    this.input.nativeElement.innerHTML = this.wrapInDivs(r.content);
+    this.input.nativeElement.innerHTML = this.wrapInParagraph(r.content);
     this.render();
   }
 
@@ -549,6 +494,13 @@ export class HomePage {
     this.showToast("Template Selected.");
   }
   onSelectionChange(e) {
+    this.textSelected = window.getSelection().toString().length > 0;
+    this.changeDetector.detectChanges();
     this.focusCurrentLine();
+    
+  }
+  onContextMenu(e) {
+    this.textSelected = true
+    return true;
   }
 }

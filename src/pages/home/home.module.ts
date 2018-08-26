@@ -1,10 +1,11 @@
+import { ToolbarComponent } from './../../components/toolbar/toolbar';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { HomePage } from './home';
 import { PopUp } from './home-view-popup';
 
 @NgModule({
-  declarations: [HomePage, PopUp],
+  declarations: [HomePage, PopUp, ToolbarComponent],
   imports: [IonicPageModule.forChild(HomePage)],
   entryComponents: [PopUp]
 })

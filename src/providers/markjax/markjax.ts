@@ -16,6 +16,22 @@ interface IHeading {
   level: string
 }
 
+enum AppendModes {
+  QUOTE,
+  HEADER,
+  BULLET,
+  BULLET_NUM
+}
+
+enum WrapModes {
+  ITALIC,
+  BOLD,
+  UNDERLINE,
+  STRIKEOUT,
+  CODE,
+  CODE_BLOCK
+}
+
 @Injectable()
 export class MarkjaxProvider {
   settings: Object;
@@ -61,4 +77,65 @@ export class MarkjaxProvider {
     this.events.publish(EventNames.headingLoaded, this.headers.concat())
     this.headers = [];
   }
+
+  append(mode) {
+    let text = window.getSelection().toString();
+    let wrap;
+    switch (mode) {
+      case AppendModes.QUOTE:
+        wrap = `>`;
+        break;
+      case AppendModes.BULLET:
+        wrap = `-`;
+        break;
+      case AppendModes.HEADER:
+        wrap = `#`;
+        break;
+      case AppendModes.BULLET_NUM:
+        wrap = `.`;
+        break;
+      default:
+        break;
+    }
+    text = `${wrap} ${text}`;
+    document.execCommand("insertText", false, text);
+  }
+
+  wrap(mode) {
+    let text = window.getSelection().toString();
+    let wrap;
+    switch (mode) {
+      case WrapModes.ITALIC:
+        wrap = `*`;
+        break;
+      case WrapModes.BOLD:
+        wrap = `**`;
+        break;
+      case WrapModes.STRIKEOUT:
+        wrap = `~~`;
+        break;
+      case WrapModes.CODE:
+        wrap = "`";
+        break;
+      case WrapModes.CODE_BLOCK:
+        // wrap = "```";
+        this._wrapInCode();
+        return;
+      default:
+        break;
+    }
+    text = `${wrap}${text}${wrap}`;
+    document.execCommand("insertText", false, text);
+  }
+
+  private _wrapInCode() {
+    let text = window.getSelection().toString();
+    let wrap = "```";
+    text = `\n${wrap}\n${text}\n${wrap}`;
+    document.execCommand("insertText", false, text);
+  }
 }
+
+
+
+export { WrapModes, AppendModes };

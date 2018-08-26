@@ -1,5 +1,14 @@
 import { NavParams } from 'ionic-angular';
 import { Component } from '@angular/core';
+import { EventsProvider, EventNames } from '../../providers/events/events';
+
+enum ViewModes {
+  NARROW_EDIT,
+  WIDE_EDIT,
+  NARROW_PREVIEW,
+  WIDE_PREVIEW,
+  NORMAL
+}
 
 @Component({
   selector: 'view-popup',
@@ -17,25 +26,24 @@ export class PopUp{
 
   modes:Array<{num: number, name:string}>
 
-  constructor(private navParams: NavParams) {
+  constructor(
+    private navParams: NavParams,
+    private events: EventsProvider
+  ) {
     this.modes = [
-      { num: 1, name: 'Narrow Edit' },
-      { num: 2, name: 'Wide Edit' },
-      { num: 3, name: 'Narrow View' },
-      { num: 4, name: 'Wide View' },
-      { num: 5, name: 'Normal' }
+      { num: ViewModes.NARROW_EDIT, name: 'Narrow Edit' },
+      { num: ViewModes.WIDE_EDIT, name: 'Wide Edit' },
+      { num: ViewModes.NARROW_PREVIEW, name: 'Narrow View' },
+      { num: ViewModes.WIDE_PREVIEW, name: 'Wide View' },
+      { num: ViewModes.NORMAL, name: 'Normal' }
     ]
 
-    this.setCallback()
-  }
-
-  setCallback(callback?){
-    callback = this.navParams.get('callback')
-    this.callback = callback
   }
 
   set(value){
     this.state = value
-    this.callback(value)
+    this.events.publish(EventNames.viewChanged, value)
   }
 }
+
+export { ViewModes };

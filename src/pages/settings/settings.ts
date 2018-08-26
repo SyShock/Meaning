@@ -12,6 +12,7 @@ import {
   ViewController
 } from "ionic-angular";
 import { Storage } from "@ionic/storage";
+import { EventsProvider, EventNames } from '../../providers/events/events';
 
 @IonicPage()
 @Component({
@@ -42,7 +43,8 @@ export class SettingsPage {
     private modalCtrl: ModalController,
     private renderer: Renderer,
     private viewCtrl: ViewController,
-    private storage: Storage
+    private storage: Storage,
+    private events: EventsProvider
   ) {
     this.headerFontOptions = [
       { name: "Roboto", value: "roboto" },
@@ -224,5 +226,7 @@ export class SettingsPage {
   ionViewWillUnload() {
     const config = JSON.stringify(this.settings.config);
     this.storage.set("config", config);
+    this.events.publish(EventNames.settingsChanged);
+    this.events.publish(EventNames.textChanged);
   }
 }
