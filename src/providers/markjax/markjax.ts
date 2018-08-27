@@ -20,7 +20,8 @@ enum AppendModes {
   QUOTE,
   HEADER,
   BULLET,
-  BULLET_NUM
+  BULLET_NUM,
+  LINE
 }
 
 enum WrapModes {
@@ -79,25 +80,33 @@ export class MarkjaxProvider {
   }
 
   append(mode) {
-    let text = window.getSelection().toString();
-    let wrap;
+    const selector = window.getSelection();
+    let text = selector.focusNode.textContent;
+    let append;
     switch (mode) {
       case AppendModes.QUOTE:
-        wrap = `>`;
+        append = `>`;
         break;
       case AppendModes.BULLET:
-        wrap = `-`;
+        append = `-`;
         break;
       case AppendModes.HEADER:
-        wrap = `#`;
+        append = `#`;
         break;
       case AppendModes.BULLET_NUM:
-        wrap = `.`;
+        append = `.`;
+        break;
+      case AppendModes.LINE:
+        append = `___\n`;
         break;
       default:
         break;
     }
-    text = `${wrap} ${text}`;
+    text = `${append} ${text}`;
+    const range = document.createRange();
+    range.selectNode(window.getSelection().focusNode);
+    selector.removeAllRanges();
+    selector.addRange(range);
     document.execCommand("insertText", false, text);
   }
 
@@ -135,7 +144,5 @@ export class MarkjaxProvider {
     document.execCommand("insertText", false, text);
   }
 }
-
-
 
 export { WrapModes, AppendModes };

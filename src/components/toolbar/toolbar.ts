@@ -63,13 +63,25 @@ export class ToolbarComponent {
   bold(){
     this.parser.wrap(WrapModes.BOLD)
   }
-
   italic(){
     this.parser.wrap(WrapModes.ITALIC);
   } 
-
   code(){
     this.parser.wrap(WrapModes.CODE);
   }
-
+  strikeout(){
+    this.parser.wrap(WrapModes.STRIKEOUT);
+  }
+  bullet(){
+    this.parser.append(AppendModes.BULLET);
+  }
+  bulletNumber(){
+    this.parser.append(AppendModes.BULLET_NUM);
+  }
+  quote(){
+    this.parser.append(AppendModes.QUOTE);
+  }
+  line(){
+    this.parser.append(AppendModes.LINE);
+  }
 }

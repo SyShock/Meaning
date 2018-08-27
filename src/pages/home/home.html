@@ -8,21 +8,7 @@
   <!-- <templates #templates></templates> -->
 
   <div id="title-bar">
-    <ion-item no-lines [class.fade-in]="searchMode" [class.fade-out]="!searchMode">
-      <ion-input id="search-bar" #searchBar type="search" (keyup)="onSearchInput($event)"></ion-input>
-      <ion-buttons item-end>
-          <label class="counter">{{matchIndex+1}}/{{matches+1}}</label>
-          <button ion-button clear icon (mousedown)="toggleSearch($event)">
-              <ion-icon name="close"></ion-icon>
-            </button>
-        <button ion-button clear icon (mousedown)="goTo($event,{forward: false})">
-          <ion-icon name="arrow-up"></ion-icon>
-        </button>
-        <button ion-button clear icon (mousedown)="goTo($event,{forward: true})">
-          <ion-icon name="arrow-down"></ion-icon>
-        </button>
-      </ion-buttons>
-    </ion-item>
+    <searchbar [(searchMode)]="searchMode"></searchbar>
     <toolbar *ngIf="smallScreen" [inSelection]="textSelected && !searchMode"></toolbar>
 
   </div>
@@ -55,7 +41,7 @@
     </button>
   </ion-buttons>
   <ion-buttons *ngIf='smallScreen' [class.searchMode]="searchMode" [class.previewMode]="mobilePreviewMode" class="top-right">
-    <button ion-button clear (mousedown)="toggleSearch()">
+    <button ion-button clear (mousedown)="searchBar.toggleSearch()">
       <ion-icon color='black' name="search"></ion-icon>
     </button>
     <button ion-button clear (mousedown)="undo($event)">

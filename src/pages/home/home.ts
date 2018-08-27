@@ -17,6 +17,7 @@ import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
 import { EventsProvider, EventNames } from "../../providers/events/events";
 import { Slides } from "ionic-angular";
 import { Keyboard } from "@ionic-native/keyboard";
+import { SearchbarComponent } from "../../components/searchbar/searchbar";
 
 
 @IonicPage()
@@ -27,9 +28,9 @@ import { Keyboard } from "@ionic-native/keyboard";
 export class HomePage {
   @ViewChild("input") input: any;
   @ViewChild(PopUp) popup: PopUp;
+  @ViewChild(SearchbarComponent) searchBar: SearchbarComponent;
   @ViewChild("output") output: any;
   @ViewChild("slider") slider: Slides;
-  @ViewChild('searchBar') searchbar: any;
 
   smallScreen: boolean;
   wideScreen: boolean;
@@ -61,6 +62,7 @@ export class HomePage {
   searchMode: boolean = false;
 
   findInPage: any;
+  viewChanged: boolean = false;
 
   hasChanged: boolean = false;
 
@@ -92,6 +94,8 @@ export class HomePage {
 
   ionViewDidEnter() {
     this.getSettingsConfig();
+    this.searchBar.config({ input: this.input.nativeElement });
+
     if (this.slider) {
       this.slider.ionSlideDidChange.subscribe(() => {
         if (this.slider.getActiveIndex() === 0) {
@@ -116,6 +120,13 @@ export class HomePage {
     this.colorViewScreen();
     this.onResize();
     // this.render();
+  }
+
+  ngAfterContentChecked() {
+    if (this.viewChanged && this.input && this.searchBar) {
+      this.searchBar.config({ input: this.input.nativeElement });
+      this.viewChanged = false;
+    }
   }
 
   getSettingsConfig(){
@@ -208,68 +219,6 @@ export class HomePage {
     if (parent) parent.classList.add("focused");
   }
 
-  toggleSearch(e) {
-    if (e) e.preventDefault();
-    this.searchMode = !this.searchMode;
-    if (this.searchMode) {
-      this.searchbar.setFocus();
-      const length = this.searchbar.value.length || 0;
-      //@ts-ignore
-      document.getElementById('search-bar').children[0].setSelectionRange(length, length);
-      this.searchText();
-    } else {
-      this.searchClear();
-    }
-  }
-  // document or specific el
-  searchClear() {
-    let spans: any = document.getElementsByClassName("match");
-    spans = Array.from(spans);
-    for (let span of spans) {
-      const parent = span.parentNode;
-      parent.insertBefore(span.firstChild, span);
-      parent.removeChild(span);
-    }
-  }
-  searchText() {
-    this.searchClear();
-    if (this.searchbar.value.length === 0) return;
-    this.matchIndex = -1;
-    this.matches = -1;
-    const pattern = new RegExp(`>(.*?)<`, "gi");
-    this.input.nativeElement.innerHTML = this.input.nativeElement.innerHTML.replace(
-      pattern,
-      (match, ptr) => {
-        ptr = new RegExp(`${this.searchbar.value}`, "gi");
-        return match.replace(ptr, _match => {
-          this.matches++;
-          return `<span class="match" ${
-            this.matches
-            }">${_match}</span>`;
-        });
-      }
-    );
-  }
-  onSearchInput(e) {
-    if (e.key == "F3") this.goTo(null, { forward: true });
-    else { this.searchText(); }
-  }
-  goTo(e, { forward }) {
-    if (e) e.preventDefault();
-    if (forward && this.matches > this.matchIndex) this.matchIndex++;
-    else if (!forward && this.matchIndex > 0) this.matchIndex--;
-    else this.matchIndex = 0;
-
-    const matches = document.getElementsByClassName("match");
-    const range = document.createRange();
-    const selector = document.getSelection();
-    const el: any = matches[this.matchIndex];
-    range.selectNode(el);
-    selector.removeAllRanges();
-    selector.addRange(range);
-    el.scrollIntoView(false);
-    el.focus();
-  }
 
   /**
    * ===================================
@@ -429,14 +378,14 @@ export class HomePage {
     } // best separate this block into a function
     // rerun to return hightlight?
     if (e.key == "F3") {
-      if (e.shiftKey) this.goTo(null, { forward: false });
-      else this.goTo(null, { forward: true });
+      if (e.shiftKey) this.searchBar.goTo(null, { forward: false });
+      else this.searchBar.goTo(null, { forward: true });
     }
     if (e.ctrlKey) {
       if (e.key === "S") this.showPrompt();
       else if (e.key === "s") this._saveFile();
 
-      if (e.key === "f") this.toggleSearch(null);
+      if (e.key === "f") this.searchBar.toggleSearch(null);
       if (e.key === "i") this.parser.wrap(WrapModes.ITALIC);
       if (e.key === "j") this.parser.wrap(WrapModes.BOLD);
       if (e.key === "q") this.parser.append(AppendModes.QUOTE);
@@ -446,13 +395,11 @@ export class HomePage {
     if (e.ctrlKey && e.altKey && e.key === "u") this.parser.wrap(WrapModes.UNDERLINE);
     if (e.ctrlKey && e.key === "k") this.parser.wrap(WrapModes.CODE);
     if (e.ctrlKey && e.key === "K") this.parser.wrap(WrapModes.CODE_BLOCK);
+    if (e.key === "Escape" && this.searchMode) {
+      this.searchBar.toggleSearch(null);
+    } 
   }
 
-  onTextInput() {
-    const input: HTMLElement = this.input.nativeElement;
-    const regex = new RegExp(`/(${this.searchText})+/g`);
-    const array = input.innerHTML.match(regex);
-  }
 
   onResize(e?) {
     const elInput = this.input.nativeElement;
@@ -461,21 +408,22 @@ export class HomePage {
     if (e) t = e.target;
     else t = window;
 
-    this.input.nativeElement.innerHTML = this.textAreaContent; //on smallScreen flag update and rerender would be best
+    elInput.innerHTML = this.textAreaContent; //on smallScreen flag update and rerender would be best
     if (t.innerWidth < 600 && !this.smallScreen) {
       this.smallScreen = true;
       this.render();
-
+      this.viewChanged = true;
     } else if (t.innerWidth > 600 && this.smallScreen){
       this.smallScreen = false;
       this.render();
-
+      this.viewChanged = true;
     }
+
   }
 
   onEditInput() {
-    if (this.searchMode) this.toggleSearch(null);
-    this.searchClear();
+    if (this.searchMode) this.searchBar.toggleSearch(null);
+    this.searchBar.searchClear();
     this.hasChanged = true;
     this.render()
   }
