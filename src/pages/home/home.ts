@@ -141,8 +141,7 @@ export class HomePage {
   onBlur() {
     if (!this.mobilePreviewMode && !this.searchMode &&
       (!this.menuCtrl.isAnimating() || !this.menuCtrl.isOpen()) ) {
-      const elInput = this.input.nativeElement;
-      elInput.focus();
+      this.input.nativeElement.focus();
     }   
   }
 

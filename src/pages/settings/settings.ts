@@ -102,6 +102,9 @@ export class SettingsPage {
     this._headerFont = this.settings.getHeaderFont();
 
     this._theme = this.settings.getActiveTheme();
+
+    this.events.once(EventNames.bookmarkSelected, 
+      () => this.paths = this.settings.getPaths());
   }
 
   set _textFont(value) {

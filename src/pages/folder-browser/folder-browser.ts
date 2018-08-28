@@ -22,7 +22,6 @@ interface IBackup {
 export class FolderBrowserPage {
   @ViewChildren('searchbar') searchbar: any;
 
-
   searchWords: string;
   fileSelectMode: boolean;
 
@@ -116,9 +115,8 @@ export class FolderBrowserPage {
     let dirName = this.path.match(/(\w+)$/g)
     this.settings.addPath(dirName, this.path)
     this.getMetadata(r)
-    this.navCtrl.setRoot(HomePage)
+    this.navCtrl.pop();
     this.events.publish(EventNames.bookmarkSelected)
-    this.events.publish(EventNames.menuToggled)
   }
 
   async openFile(fileName){

@@ -262,7 +262,8 @@ export class MyApp {
   async loadProjectFiles(pathUrl: string) {
     this.extFiles.clearPath()
     this.extFiles.jumpToDir(pathUrl)
-    this.nav.push(FolderBrowserPage, { 'fileSelect': true })
+    const modal = this.modalCtrl.create(FolderBrowserPage, { 'fileSelect': true })
+    modal.present();
     // this.state.files.splice(0, this.state.files.length)
     // const files = await this.extFiles.listFiles(['.md', '.txt'])
     // this.state.files = files.map((el) => {return {title: el, element: ''}})
