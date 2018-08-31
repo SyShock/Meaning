@@ -47,19 +47,19 @@
   </ion-item>
   <ion-item>
     <ion-label>Header Font</ion-label>
-    <ion-select item-end [placeholder]="headerFont" (tap)="showPopOver($event, headerFontOptions, onHeaderFontChange)">
+    <ion-select item-end [placeholder]="headerFont" interface="popover" (tap)="showPopOver($event, headerFontOptions, onHeaderFontChange)">
       {{headerFont}}
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Text Font</ion-label>
-    <ion-select item-end [placeholder]="textFont" (tap)="showPopOver($event, textFontOptions, onTextFontChange)">
+    <ion-select item-end [placeholder]="textFont" interface="popover" (tap)="showPopOver($event, textFontOptions, onTextFontChange)">
       {{textFont}}
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Font Size</ion-label>
-    <ion-select item-end [placeholder]="textSize" (tap)="showPopOver($event, fontSizeList, onFontSizeChange)">
+    <ion-select item-end [placeholder]="textSize" interface="popover" (tap)="showPopOver($event, fontSizeList, onFontSizeChange)">
       {{textSize}}
     </ion-select>
   </ion-item>

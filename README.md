@@ -7,7 +7,6 @@ Uses Ionic 3 framework and electron.
 #### Features:
 - Live-rendering
 - ~~Spell-check~~
-- ~~Option for conditional rendering~~
 - Different edit modes: Edit only, Preview only
 - Customizable theme, font color, font style, size
 - ~~Optional typewritter sound-effect~~
@@ -16,7 +15,7 @@ Uses Ionic 3 framework and electron.
 - Supported platforms - Windows, MacOS, Linux, Android, iOS
 
 
-### Keybindings:
+### Keybinds:
 - ctrl+b - side-menu
 - ctrl+f - search in edit / search files(while side menu is opened)
 - ctrl+s - save file
@@ -35,10 +34,10 @@ Uses Ionic 3 framework and electron.
 #### To Do:
 - [ ] spell-check
 - [x] mobile view
-- [ ] fixed grid view in file explorer
+- [x] fixed grid view in file explorer
 - [ ] pdf export
 - [ ] html export
-- [ ] find word in edit mode
+- [x] find word in edit mode
 - [x] multiple preview modes
 - [ ] github markdown hotkeys
 - [ ] typewritter sound-effect
@@ -48,8 +47,6 @@ Uses Ionic 3 framework and electron.
 - [x] fix new lines being removed while saving
 - [ ] app icon 
 - [X] enable window dragging from the top part
-- [ ] on window you cannot go back when selecting a bookmark
-- [ ] expand and contract animations for the side-menu
 - [ ] fix focus line breaking after copy-paste
 - [ ] add help and cheatsheets: 
 http://reu.dimacs.rutgers.edu/Symbols.pdf,

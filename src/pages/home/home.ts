@@ -441,11 +441,12 @@ export class HomePage {
     this.showToast("Template Selected.");
   }
   onSelectionChange(e) {
-    this.textSelected = window.getSelection().toString().length > 0;
+    if (window.getSelection().toString().length <= 0)
+      this.textSelected = false
     this.changeDetector.detectChanges();
     this.focusCurrentLine();
-    
   }
+  
   onContextMenu(e) {
     this.textSelected = true
     return true;

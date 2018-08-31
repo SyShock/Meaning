@@ -39,7 +39,6 @@ export class ToolbarComponent {
   
   increaseHeader() {
     // this.parser.append(AppendModes.HEADER)
-    
     const focusNode = this._getFocused();
     const matched = focusNode.textContent.match(/^#+/)
     if (matched !== null) {
@@ -50,7 +49,6 @@ export class ToolbarComponent {
   }
 
   decreaseHeader() {
-    
     const focusNode = this._getFocused();
     const matched = focusNode.textContent.match(/^#+/)
     if (matched !== null) {
