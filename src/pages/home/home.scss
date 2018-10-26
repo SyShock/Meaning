@@ -104,9 +104,9 @@ page-home {
     display: block;
     margin-left: 20px;
   }
-  .mathjax *{
-    // all: unset;
-  }
+  /*.mathjax *{
+    all: unset;
+  }*/
   .counter{
       vertical-align: sub;
     }
@@ -249,9 +249,13 @@ page-home {
     right: 0;
     padding-right: 55px;
     padding-bottom: 16px;
-    opacity: 0.5;
+    opacity: 0.0;
     position: absolute;
     display: unset;
+    transition: opacity 0.2s ease-in; 
+    &:hover {
+      opacity: 0.5;
+    }
   }
   #title-bar{
     .item-inner {

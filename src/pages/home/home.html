@@ -10,7 +10,6 @@
   <div id="title-bar">
     <searchbar [(searchMode)]="searchMode"></searchbar>
     <toolbar *ngIf="smallScreen" [inSelection]="textSelected && !searchMode"></toolbar>
-
   </div>
 
   <span *ngIf="!smallScreen" id="wide" [class]="previewMode">
@@ -59,7 +58,7 @@
     </button>
   </ion-buttons>
 
-  <!-- <div id="status-bar">Word Count: {{wordCount}} </div> -->
+  <div id="status-bar">Word Count: {{wordCount}} </div>
 
 
   <ion-fab *ngIf="isTemplate" right bottom>
@@ -67,6 +66,11 @@
       <ion-icon name="copy"></ion-icon>
     </button>
   </ion-fab>
+
+<!-- 
+  <div id="footer">
+    <label>{wordCount}</label>
+  </div> -->
 
 
 </ion-content>

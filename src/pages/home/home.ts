@@ -1,12 +1,10 @@
 import { SettingsProvider } from "./../../providers/settings/settings";
-import { TemplatesComponent } from "./../../components/templates/templates";
 import { MarkjaxProvider, AppendModes, WrapModes } from "./../../providers/markjax/markjax";
 import { Component, ViewChild, ChangeDetectorRef } from "@angular/core";
 import {
   AlertController,
   IonicPage,
   NavController,
-  NavParams,
   PopoverController,
   ToastController,
   MenuController,
@@ -18,6 +16,7 @@ import { EventsProvider, EventNames } from "../../providers/events/events";
 import { Slides } from "ionic-angular";
 import { Keyboard } from "@ionic-native/keyboard";
 import { SearchbarComponent } from "../../components/searchbar/searchbar";
+import { debug } from "util";
 
 
 @IonicPage()
@@ -34,41 +33,31 @@ export class HomePage {
 
   smallScreen: boolean;
   wideScreen: boolean;
-
   textAreaContent: string = ``;
-
   wordCounter: boolean;
   textFocused: boolean;
-
   textFont: string;
   headerColor: string;
   headerFont: string;
   textColor: string;
   textSize: string;
-
   textSelected: boolean = false;
-
   wordCount: number;
   percentViewing: number;
-
   previewMode: string;
   mobilePreviewMode: boolean = false;
   changed: boolean;
   parsedContent: string;
   isTemplate: boolean;
-
   matches: number = -1;
   matchIndex: number = -1;
   searchMode: boolean = false;
-
   findInPage: any;
   viewChanged: boolean = false;
-
   hasChanged: boolean = false;
 
   constructor(
     public navCtrl: NavController,
-    private navParams: NavParams,
     private files: ExternFilesProvider,
     private events: EventsProvider,
     private alertCtrl: AlertController,
@@ -80,10 +69,9 @@ export class HomePage {
     private menuCtrl: MenuController,
     private changeDetector: ChangeDetectorRef
   ) {
-
-    this.events.once(EventNames.fileOpened, r => this.onFileOpened(r));
-    this.events.once(EventNames.fileToSave, () => this._saveFile());
-    this.events.once(EventNames.fileToSaveAs, () => this.showPrompt());
+    this.events.once(EventNames.fileOpened, ret => this.onFileOpened(ret));
+    this.events.once(EventNames.fileToSave, ret => this._saveFile(ret));
+    this.events.once(EventNames.fileToSaveAs, () => this.presentPrompt());
     this.events.once(EventNames.configLoaded, () => this.ionViewDidEnter());
     this.events.once(EventNames.fileNew, () => this.onNewFile());
     this.events.once(EventNames.textChanged, () => this.render());
@@ -95,7 +83,6 @@ export class HomePage {
   ionViewDidEnter() {
     this.getSettingsConfig();
     this.searchBar.config({ input: this.input.nativeElement });
-
     if (this.slider) {
       this.slider.ionSlideDidChange.subscribe(() => {
         if (this.slider.getActiveIndex() === 0) {
@@ -107,7 +94,6 @@ export class HomePage {
           this.textSelected = false;
         }
       });
-
       this.keyboard.onKeyboardHide().subscribe(() => {
         // this.slider.slideTo(1);
       });
@@ -259,7 +245,8 @@ export class HomePage {
   exitApp() {
     const _window: any = window;
     const electron = _window.require("electron");
-    electron.remote.app.exit();
+    window.close()
+//    electron.remote.app.exit();
   }
 
   undo(e) {
@@ -272,9 +259,10 @@ export class HomePage {
     document.execCommand("redo");
   }
 
-  showPrompt() {
+  presentPrompt() {
     const theme = this.settings.getActiveTheme()
     this.events.lock(EventNames.fileToSaveAs)
+    this.events.lock(EventNames.fileToSave)
     let prompt = this.alertCtrl.create({
       cssClass: theme,
       title: `File will be saved at:`,
@@ -298,21 +286,22 @@ export class HomePage {
         //     this.events.publish("to-save-file-canceled");
         //   }
         // },
-        {
+        { 
           text: "Save",
           handler: data => {
-            console.log("Saved clicked");
-          }
+            if (data.fileName) {
+              this.events.publish(EventNames.fileToSaveCanceled)
+              this.saveFile(data.fileName);
+              this.files.openedFile = data.fileName;
+            }
+          } 
         }
       ],
     });
     prompt.present();
-    prompt.onDidDismiss(r => {
-      if (r.fileName) {
-        this.events.publish(EventNames.fileToSaveCanceled)
-        this.saveFile(r.fileName);
-        this.files.openedFile = r.fileName;
-      }
+    prompt.onDidDismiss(ret => {
+      // if (ret.fileName) {
+      // }
     });
   }
 
@@ -337,8 +326,8 @@ export class HomePage {
     popover.dismiss();
   }
 
-  _saveFile() {
-    const fileName = this.files.openedFile;
+  _saveFile(ret = null) { //Note: the it is like now, it will save on exit always!
+    const fileName = this.files.openedFile || ret;
     if (fileName && fileName !== "") this.saveFile(fileName);
     else this.events.publish(EventNames.fileToSaveAs);
   }
@@ -358,6 +347,7 @@ export class HomePage {
    * =============================================
    */
   onNewFile() {
+    console.log("YES!")
     this.textAreaContent = '';
     this.input.nativeElement.innerHTML = "";
     this.files.openedFile = "";
@@ -381,7 +371,7 @@ export class HomePage {
       else this.searchBar.goTo(null, { forward: true });
     }
     if (e.ctrlKey) {
-      if (e.key === "S") this.showPrompt();
+      if (e.key === "S") this.presentPrompt();
       else if (e.key === "s") this._saveFile();
 
       if (e.key === "f") this.searchBar.toggleSearch(null);

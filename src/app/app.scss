@@ -29,6 +29,10 @@
   display: static;
 }
 
+.item-md.item-block .item-inner { 
+        border-bottom: unset;
+    }
+
 
 h3{
     cursor: pointer;

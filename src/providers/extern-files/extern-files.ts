@@ -81,7 +81,7 @@ export class ExternFilesProvider {
     const native = require("@ionic-native/file");
     this.fileCalls = new native.File();
     this.base = "file:///sdcard";
-    this._base = "file:///sdcard";
+    this._base = "file:///sdcard" + this.defaultAppLocation;
     this.listDirs = this._cordovaListDirs;
     this.listFiles = this._cordovaListFiles;
     this.makeDir = this._cordovaMakeDir;

@@ -1,4 +1,6 @@
-<ion-menu [class]="settings.config.theme" [content]="content">
+<ion-menu [class]="settings.config.theme" [content]="content"
+    (document:keyup)="onKeyUp($event)"
+>
   <ion-header>
     <ion-toolbar>
       <!-- <ion-title center >MEANING</ion-title> -->
@@ -39,9 +41,6 @@
             {{p.title}}
           </button>
         </span>
-        <!-- <button menuClose ion-item no-lines (tap)="presentAboutModal()">
-          About
-        </button> -->
       </expandable>
       <!-- <span *ngFor="let key in state">
 
@@ -66,14 +65,6 @@
       </expandable> --> 
 
       <expandable #headers [expanded]="keyword && keyword.long=='headers'" (state)="searchKeywords($event ? 'headers' : null)" title="Headers">
-       <!--   <expandable>
-              <expandable>
-                  <expandable>
-                      <expandable>
-                      </expandable>
-                    </expandable>
-                </expandable>
-          </expandable> -->
         <button  ion-item no-lines *ngFor="let header of state.headers" (tap)="goToElement(header.element.id)">
             <sup>H{{header.element.level}}</sup> {{header.title}}
         </button>

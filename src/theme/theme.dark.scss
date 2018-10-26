@@ -26,6 +26,7 @@ $side-bar-color: #111111;
         // transition: all 1.1s ease;
         background-color: $primary-color !important;
     }
+    
     .item-note,
     .themeButton,
     .swiper-pagination-bullet {
@@ -66,7 +67,7 @@ $side-bar-color: #111111;
     }
     .s2,
     .s3,
-    .toggle-inner,
+    // .toggle-inner,
     .range-pin,
     .range-pin::before,
     .range-knob,

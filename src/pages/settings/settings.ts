@@ -34,6 +34,7 @@ export class SettingsPage {
   headerColor: string;
   textColor: string;
   textFocus: boolean;
+  autoSaveEnabled: boolean;
 
   constructor(
     public navCtrl: NavController,
@@ -102,6 +103,7 @@ export class SettingsPage {
     this._headerFont = this.settings.getHeaderFont();
 
     this._theme = this.settings.getActiveTheme();
+    this.autoSaveEnabled = this.settings.isAutoSaveEnabled();
 
     this.events.once(EventNames.bookmarkSelected, 
       () => this.paths = this.settings.getPaths());
@@ -197,6 +199,10 @@ export class SettingsPage {
 
   onTextFocusChange(value) {
     this.settings.setTextFocus(value);
+  }
+
+  onAutoSaveToggle(value) {
+    this.settings.toggleAutoSave(value);
   }
 
   showPopOver(e, data, _callback) {

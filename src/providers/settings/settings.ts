@@ -8,7 +8,8 @@ interface IConfig{
   textFont: string,
   textColor: string,
   textSize: string,
-  textFocus: boolean
+  textFocus: boolean,
+  autoSaveEnabled: boolean
 }
 
 
@@ -27,13 +28,22 @@ export class SettingsProvider {
       textFont: 'roboto',
       textColor: '',
       textSize: 'normal',
-      textFocus: true
+      textFocus: true,
+      autoSaveEnabled: true
     }
     this.config.paths.pop()
   }
 
   initConfig(obj: IConfig){
     this.config = obj
+  }
+
+  isAutoSaveEnabled(): boolean {
+    return this.config.autoSaveEnabled
+  }
+
+  toggleAutoSave(state) {
+    return this.config.autoSaveEnabled = state
   }
 
   setTheme(themeName){

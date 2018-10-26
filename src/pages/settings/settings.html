@@ -45,6 +45,11 @@
     <ion-toggle [(ngModel)]="textFocus" (ionChange)="onTextFocusChange(textFocus)">
     </ion-toggle>
   </ion-item>
+    <ion-item>
+      <ion-label>Toggle Auto Save</ion-label>
+      <ion-toggle [(ngModel)]="autoSaveEnabled" (ionChange)="onAutoSaveToggle(autoSaveEnabled)">
+      </ion-toggle>
+    </ion-item>
   <ion-item>
     <ion-label>Header Font</ion-label>
     <ion-select item-end [placeholder]="headerFont" interface="popover" (tap)="showPopOver($event, headerFontOptions, onHeaderFontChange)">
