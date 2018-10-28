@@ -13,7 +13,7 @@ import {
 import { PopUp, ViewModes } from "./home-view-popup";
 import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
 import { EventsProvider, EventNames } from "../../providers/events/events";
-import { Slides } from "ionic-angular";
+import { Slides, Platform } from 'ionic-angular';
 import { Keyboard } from "@ionic-native/keyboard";
 import { SearchbarComponent } from "../../components/searchbar/searchbar";
 import { debug } from "util";

@@ -1,7 +1,7 @@
 import { Storage } from '@ionic/storage';
 import { SettingsProvider } from './../providers/settings/settings';
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, MenuToggle, MenuController, AlertController, ModalController } from 'ionic-angular';
+import { App, Nav, Platform, MenuToggle, MenuController, AlertController, ModalController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { ExternFilesProvider } from '../providers/extern-files/extern-files';
@@ -10,6 +10,7 @@ import { FolderBrowserPage } from '../pages/folder-browser/folder-browser';
 import { SettingsPage } from './../pages/settings/settings';
 import { EventsProvider, EventNames } from '../providers/events/events';
 import jsPDF from 'jspdf'
+
 
 interface IMenuElement {
   title: string,
@@ -36,6 +37,7 @@ interface IKeyWord {
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
   @ViewChild('searchbar') searchbar: any;
+  rootPage: any = HomePage;
 
   backupState: ISearchbarState = {
     files: [],
@@ -79,6 +81,7 @@ export class MyApp {
     private storage: Storage,
     private modalCtrl: ModalController,
     public menuCtrl: MenuController,
+    private app: App
   ) {
     this.platform.ready().then( () => this.initAppGlobalEvents())
     
@@ -90,7 +93,6 @@ export class MyApp {
   }
 
   onAppConfigLoaded(data) {
-    this.nav.setRoot(HomePage);
     this.state.main = [
       {
         title: 'New',
@@ -137,6 +139,9 @@ export class MyApp {
     this.events.once(EventNames.fileSaved, () => {
       // this.events.unlock(EventNames.fileToSaveAs)
     })
+    this.events.once(EventNames.minimizeApp, () => {
+      this.platform.exitApp()
+    })
     this.events.once(EventNames.fileToSaveCanceled, () => {
       this.events.unlock(EventNames.fileToSaveAs)
       this.events.unlock(EventNames.fileToSave)
@@ -147,8 +152,11 @@ export class MyApp {
       this.menu.toggle()
     }, false)
 
+    let timeout = null;
     this.platform.registerBackButtonAction((e) => {
-      let activeView = this.nav.getActive();
+      let nav = this.app._appRoot._getActivePortal() || this.app.getActiveNav();
+      let activeView = nav.getActive();
+
       if (activeView != null) {
         if (this.nav.canGoBack()) { //when app is at another page
           this.nav.pop();
@@ -156,6 +164,12 @@ export class MyApp {
           this.onExit()
           this.platform.exitApp()
         } else { // when app is at root
+          if (timeout) {
+            this.platform.exitApp()
+          }
+          timeout = setTimeout(() => {
+            clearTimeout(timeout)
+          },1000)
           this.events.publish(EventNames.fileToSave)
         }
       }
@@ -168,7 +182,7 @@ export class MyApp {
         window.addEventListener('beforeunload', () => this.onExit())
       }
       if (this.platform.is('cordova')) {
-        this.splashScreen.hide();
+        this.splashScreen.hide()
         this.initCordovaEvents()
       }
       this.events.once(EventNames.headingLoaded, (data) => {
@@ -274,7 +288,7 @@ export class MyApp {
   }
   onExit() {
     const filename = this._getDateAsString()
-    if(this.settings.isAutoSaveEnabled()){
+    if(this.settings.isAutoSaveEnabled()){ //inital text?, hash?
       this.events.publish(EventNames.fileToSave, filename)
     }
   }
