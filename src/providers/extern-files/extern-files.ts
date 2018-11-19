@@ -15,6 +15,7 @@ export class ExternFilesProvider {
 
   openedFile: string;
   defaultAppLocation: string = "Meaning";
+  
 
   constructor(private platform: Platform, private events: EventsProvider) {
     console.log("Hello ExternFilesProvider Provider");
@@ -100,16 +101,16 @@ export class ExternFilesProvider {
    */
 
   private _electronWrite(fileName, data) {
-    let baseURL = this.base;
-    this.fileCalls.writeFileSync(baseURL + "/" + fileName, data);
+    const baseURL = this.base + '/';
+    this.fileCalls.writeFileSync(baseURL + fileName, data);
   }
 
-  private _electronRead(fileName) {
-    let baseURL = this.base;
+  private _electronRead(fileName, withoutBasePath?) {
+    const baseURL = withoutBasePath ? '' : this.base + '/';
 
     this.onBeforeOpenFile(fileName);
 
-    return this.fileCalls.readFileSync(baseURL + "/" + fileName, "utf-8"); //"read as"
+    return this.fileCalls.readFileSync(baseURL + fileName, "utf-8"); //"read as"
   }
 
   private _electronListDirs() {
@@ -321,8 +322,9 @@ export class ExternFilesProvider {
    * Open file with specified name,
    * returns data as string (utf-8)
    * @param fileName
+   * @param withoutBasePath
    */
-  openFile(fileName) {}
+  openFile(fileName, withoutBasePath?) {}
   /**
    * Save to specified file name (will overwrite if found)
    * data as a string (utf-8)

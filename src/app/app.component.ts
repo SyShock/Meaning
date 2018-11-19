@@ -30,6 +30,8 @@ interface IKeyWord {
   short: string
 }
 
+const allowedFileTypes = [".md", ".txt"];
+
 @Component({
   templateUrl: 'app.html',
 })
@@ -162,10 +164,42 @@ export class MyApp {
     });
   }
 
+  initElectronEvents(){
+    window.addEventListener('beforeunload', () => this.onExit())
+    window.ondragover = () => {
+      return false;
+    };
+
+    window.ondragleave = () => {
+      return false;
+    };
+
+    window.ondragend = () => {
+      return false;
+    };
+
+    window.ondrop = (e) => {
+      e.preventDefault();
+      let ret = { content: null, isTemplate: false }
+      const file = e.dataTransfer.files[0];
+      let isFileAllowed = false;
+      for (let fileType of allowedFileTypes) {
+        const re = new RegExp(`${fileType}$`, "gm");
+        if (file.path.match(re)) isFileAllowed = true;
+      }
+      if (!isFileAllowed) {
+        return false;
+      }
+      ret.content = this.extFiles.openFile(file.path, true)
+      this.events.publish(EventNames.fileOpened, ret)
+      return false;
+    };
+  }
+
   initAppGlobalEvents() {
       if (this.platform.is('electron')) {
         // Electron Global Events
-        window.addEventListener('beforeunload', () => this.onExit())
+        this.initElectronEvents();
       }
       if (this.platform.is('cordova')) {
         this.splashScreen.hide();
@@ -243,7 +277,7 @@ export class MyApp {
     // this.navCtrl.pop()
   }
   async loadFiles() {
-    const files = await this.extFiles.listFiles([".md", ".txt"]);
+    const files = await this.extFiles.listFiles(allowedFileTypes);
     this.state.files = files.map(el => { return { title: el, element: '' } })
     this.backupState.files = this.state.files.concat()
   }

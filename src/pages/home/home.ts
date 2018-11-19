@@ -246,7 +246,6 @@ export class HomePage {
     const _window: any = window;
     const electron = _window.require("electron");
     window.close()
-//    electron.remote.app.exit();
   }
 
   undo(e) {
