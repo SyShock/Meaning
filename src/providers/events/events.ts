@@ -18,7 +18,8 @@ const EventNames = {
   fileSelected: 'file-selected',
   textChanged: 'text-changed',
   viewChanged: 'view-changed',
-  settingsChanged: 'settings-changed'
+  settingsChanged: 'settings-changed',
+  minimizeApp: 'minimize-app'
 };
 
 @Injectable()

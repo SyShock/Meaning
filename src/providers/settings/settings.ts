@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { StatusBar } from '@ionic-native/status-bar';
 
 interface IConfig{
   theme: string,
@@ -18,7 +19,7 @@ export class SettingsProvider {
 
   config: IConfig
 
-  constructor() {
+  constructor(private statusBar: StatusBar) {
     console.log('Hello SettingsProvider Provider');
     this.config = {
       theme:'light-theme',
@@ -46,7 +47,15 @@ export class SettingsProvider {
     return this.config.autoSaveEnabled = state
   }
 
-  setTheme(themeName){
+  setTheme(themeName: string){
+    if (themeName.includes('light')){
+      this.statusBar.backgroundColorByName('white')
+      this.statusBar.styleDefault()
+    }
+    else {
+      this.statusBar.backgroundColorByName('black');
+      this.statusBar.styleLightContent()
+    }
     this.config.theme = themeName
   }
 

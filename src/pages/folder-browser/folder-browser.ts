@@ -54,7 +54,7 @@ export class FolderBrowserPage {
     if (this.fileSelectMode) {
       this.templateMode = this.navParams.get('templates')
       if (this.templateMode) {
-        this.extFiles.jumpToDir(this.extFiles._base + '/Meaning/templates')
+        this.extFiles.jumpToDir(this.extFiles._base + '/templates')
         this.events.publish(EventNames.templatesLoaded)
       }
       this.loadFilesAndDirs()
