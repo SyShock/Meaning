@@ -27,7 +27,6 @@ export class SearchbarComponent {
   output: HTMLElement;
 
   constructor() {
-    console.log("Hello SearchbarComponent Component");
   }
 
   config({ input, output }: { input: HTMLElement; output?: HTMLElement }) {

@@ -15,7 +15,6 @@ export class AboutComponent {
   text: string;
 
   constructor() {
-    console.log('Hello AboutComponent Component');
     this.text = 'Hello World';
   }
 

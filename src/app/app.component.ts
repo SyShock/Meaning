@@ -10,6 +10,8 @@ import { FolderBrowserPage } from '../pages/folder-browser/folder-browser';
 import { SettingsPage } from './../pages/settings/settings';
 import { EventsProvider, EventNames } from '../providers/events/events';
 import jsPDF from 'jspdf'
+import { TagParserProvider } from '../providers/tag-parser/tag-parser';
+import { TaggedFilesPage } from '../pages/tagged-files/tagged-files';
 
 
 interface IMenuElement {
@@ -23,7 +25,8 @@ interface ISearchbarState {
   markdown: Array<IMenuElement>,
   katex: Array<IMenuElement>,
   bookmark: Array<IMenuElement>,
-  main: Array<IMenuElement>
+  main: Array<IMenuElement>,
+  tags: Array<string>
 }
 
 interface IKeyWord {
@@ -47,7 +50,8 @@ export class MyApp {
     bookmark: [],
     katex: [],
     markdown: [],
-    main: []
+    main: [],
+    tags: []
   }
   state: ISearchbarState = {
     files: [],
@@ -55,7 +59,8 @@ export class MyApp {
     bookmark: [],
     katex: [],
     markdown: [],
-    main: []
+    main: [],
+    tags: []
   }
 
   searchWords: string;
@@ -64,6 +69,7 @@ export class MyApp {
     { short: 'md ', long: 'markdown' },
     { short: '? ', long: 'main' },
     { short: 'b ', long: 'bookmark' },
+    { short: 't ', long: 'tags' },
     // {short:'f ', long: 'files'},
     { short: 'h ', long: 'headers' },
   ];
@@ -76,6 +82,7 @@ export class MyApp {
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
     private extFiles: ExternFilesProvider,
+    private tags: TagParserProvider,
     private events: EventsProvider,
     private menu: MenuToggle,
     private alertCtrl: AlertController,
@@ -86,7 +93,7 @@ export class MyApp {
     private app: App
   ) {
     this.platform.ready().then( () => this.initAppGlobalEvents())
-    
+    this.tags.initTagMap();
     this.events.once(EventNames.configLoaded, (data) => this.onAppConfigLoaded(data))
     this.storage.get("config").then(res => {
       if (res) this.settings.initConfig(JSON.parse(res));
@@ -134,6 +141,7 @@ export class MyApp {
     const bookmark = this.settings.getPaths();
     this.state.bookmark = bookmark.map((el) => { return { title: el.name[0], element: el } });
     this.backupState.bookmark = this.state.bookmark.concat();
+    this.state.tags = Object.keys(this.tags.TagMap);
   }
 
   initCordovaEvents() {
@@ -219,6 +227,9 @@ export class MyApp {
         this.splashScreen.hide()
         this.initCordovaEvents()
       }
+      this.events.once(EventNames.tagsCollected, () => {
+        this.state.tags = Object.keys(this.tags.TagMap);
+      })
       this.events.once(EventNames.headingLoaded, (data) => {
         this.backupState.headers = data.map((el) => { return { title: el.content, element: el } })
         this.state.headers = this.backupState.headers.concat();
@@ -282,6 +293,7 @@ export class MyApp {
     const theme = this.settings.getActiveTheme()
     const modal = this.modalCtrl.create(page.component, page.params, { cssClass: theme });
     modal.present();
+    return modal;
   }
   async openFile(fileName) {
     let ret = { content: null, isTemplate: false }
@@ -409,6 +421,11 @@ export class MyApp {
     prompt.present();
     prompt.onDidDismiss(r => {
     });
+  }
+
+  presentFilesWithTag(tag) {
+    const modal = this.openPage({ component: TaggedFilesPage, params:{ filePaths: this.tags.TagMap[tag]}})
+    this.menuCtrl.close();
   }
 
   private _getDateAsString() {

@@ -60,7 +60,6 @@ export class FolderBrowserPage {
       this.loadFilesAndDirs()
     }
     else this.loadList()
-    console.log('ionViewDidLoad FolderBrowserPage');
     this.path = this.extFiles.base;
     this.basePath = this.extFiles._base;
     this.fileSelected = false;
@@ -122,7 +121,7 @@ export class FolderBrowserPage {
   async openFile(fileName){
     let ret = {content: null, isTemplate: false}
     if (this.path.includes(`${this.extFiles.defaultAppLocation}/templates`)) ret.isTemplate = true;
-    ret.content = await this.extFiles.openFile(fileName)
+    ret.content = await this.extFiles.openFile(fileName, false, true)
     this.fileSelected = true
     this.events.publish(EventNames.fileOpened, ret)
     this.navCtrl.pop()

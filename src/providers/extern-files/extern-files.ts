@@ -10,6 +10,8 @@ export class ExternFilesProvider {
   _base: string;
   selectedDirPath: string;
 
+  customPath: boolean;
+
   private _errorMessenger: any;
   private _successMessenger: any;
 
@@ -101,15 +103,15 @@ export class ExternFilesProvider {
    */
 
   private _electronWrite(fileName, data) {
-    const baseURL = this.base + '/';
+    const baseURL = this.customPath ? '' : this.base + '/';
     this.fileCalls.writeFileSync(baseURL + fileName, data);
+    this.onAfterSaveFile()
   }
 
-  private _electronRead(fileName, withoutBasePath?) {
-    const baseURL = withoutBasePath ? '' : this.base + '/';
-
-    this.onBeforeOpenFile(fileName);
-
+  private _electronRead(fileName, customPath?: boolean, setAsOpenedFile?: boolean) {
+    const baseURL = customPath ? '' : this.base + '/';
+    this.customPath = customPath;
+    if(setAsOpenedFile) this.onBeforeOpenFile(fileName);
     return this.fileCalls.readFileSync(baseURL + fileName, "utf-8"); //"read as"
   }
 
@@ -122,8 +124,8 @@ export class ExternFilesProvider {
     });
   }
 
-  private _electronListFiles(suffixes: Array<string>) {
-    let baseURL = this.base;
+  private _electronListFiles(suffixes?: Array<string>, customPath?: string) {
+    let baseURL = customPath ? customPath : this.base;
     let res: Array<string> = this.fileCalls.readdirSync(baseURL);
     let ret = res.filter(en => {
       return this.fileCalls.statSync(baseURL + "/" + en).isFile();
@@ -185,8 +187,7 @@ export class ExternFilesProvider {
    */
 
   private _cordovaWrite(fileName, data) {
-    let baseURL = this.base;
-    console.log(baseURL, fileName);
+    let baseURL = this.customPath ? '' : this.base;
     let options: IWriteOptions = {
       replace: true
     };
@@ -196,10 +197,10 @@ export class ExternFilesProvider {
       .catch(e => console.log(e));
   }
 
-  private async _cordovaRead(fileName) {
-    let baseURL = this.base;
-    console.log(fileName);
-    this.onBeforeOpenFile(fileName);
+  private async _cordovaRead(fileName, customPath?: boolean, setAsOpenedFile?: boolean) {
+    let baseURL = customPath ? '' : this.base ;
+    this.customPath = customPath
+    if (setAsOpenedFile) this.onBeforeOpenFile(fileName);
     let res = await this.fileCalls.readAsText(baseURL, fileName);
     return res;
   }
@@ -219,8 +220,8 @@ export class ExternFilesProvider {
     return ret;
   }
 
-  private async _cordovaListFiles(suffixes?: Array<string>) {
-    let baseURL = this.base;
+  private async _cordovaListFiles(suffixes?: Array<string>, customPath?: string) {
+    const baseURL = customPath ? customPath : this.base;
     console.log("ULR: ", baseURL);
     let res: Array<IEntry> = await this.fileCalls.listDir(baseURL, ".");
     let ret = res
@@ -324,7 +325,7 @@ export class ExternFilesProvider {
    * @param fileName
    * @param withoutBasePath
    */
-  openFile(fileName, withoutBasePath?) {}
+  openFile(fileName, withoutBasePath?, setAsOpenedFile?: boolean):string | Promise<any> {return}
   /**
    * Save to specified file name (will overwrite if found)
    * data as a string (utf-8)
@@ -357,7 +358,7 @@ export class ExternFilesProvider {
    * @param suffixes
    * @param metaData
    */
-  listFiles(suffixes: Array<string> /**, metaData: Object */): any {}
+  listFiles(suffixes?: Array<string> /**, metaData: Object */, path?: string): any {}
   /**
    *  Async listing of files (in case of sync reading being too slow and seemingly inactive)
    *  callback: Func handles each file

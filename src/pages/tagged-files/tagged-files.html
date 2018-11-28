@@ -1,0 +1,16 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Select File:</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+<ion-item *ngFor="let file of files" (tap)="openFile(file)">
+  <ion-label>
+    {{file}}
+  </ion-label>
+</ion-item>
+</ion-content>

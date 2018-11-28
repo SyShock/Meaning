@@ -12,11 +12,11 @@ import {
 } from "ionic-angular";
 import { PopUp, ViewModes } from "./home-view-popup";
 import { ExternFilesProvider } from "../../providers/extern-files/extern-files";
+import { TagParserProvider } from "../../providers/tag-parser/tag-parser";
 import { EventsProvider, EventNames } from "../../providers/events/events";
 import { Slides, Platform } from 'ionic-angular';
 import { Keyboard } from "@ionic-native/keyboard";
 import { SearchbarComponent } from "../../components/searchbar/searchbar";
-import { debug } from "util";
 
 
 @IonicPage()
@@ -59,6 +59,7 @@ export class HomePage {
   constructor(
     public navCtrl: NavController,
     private files: ExternFilesProvider,
+    private tags: TagParserProvider,
     private events: EventsProvider,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
@@ -336,6 +337,7 @@ export class HomePage {
     if (this.hasChanged) {
       this.hasChanged = false;
       this.files.saveFile(r + ".md", this.input.nativeElement.innerText);
+      this.tags.parseContent(this.input.nativeElement.innerText, `${this.files.openedFile}.md`);
       this.showToast("File Saved");
     }
   }
@@ -346,7 +348,6 @@ export class HomePage {
    * =============================================
    */
   onNewFile() {
-    console.log("YES!")
     this.textAreaContent = '';
     this.input.nativeElement.innerHTML = "";
     this.files.openedFile = "";
@@ -364,7 +365,7 @@ export class HomePage {
       parent.insertBefore(el.firstChild, el);
       parent.removeChild(el);
     } // best separate this block into a function
-    // rerun to return hightlight?
+    // rerun to return highlight?
     if (e.key == "F3") {
       if (e.shiftKey) this.searchBar.goTo(null, { forward: false });
       else this.searchBar.goTo(null, { forward: true });

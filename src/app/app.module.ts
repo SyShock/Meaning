@@ -18,6 +18,8 @@ import { FolderBrowserModule } from "../pages/folder-browser/folder-browser.modu
 import { MarkjaxProvider } from '../providers/markjax/markjax';
 import { SettingsProvider } from '../providers/settings/settings';
 import { EventsProvider } from '../providers/events/events';
+import { TagParserProvider } from '../providers/tag-parser/tag-parser';
+import { TaggedFilesPageModule } from '../pages/tagged-files/tagged-files.module';
 
 @NgModule({
   declarations: [MyApp, ExpandableComponent],
@@ -27,6 +29,7 @@ import { EventsProvider } from '../providers/events/events';
     HomePageModule,
     FolderBrowserModule,
     SettingsPageModule,
+    TaggedFilesPageModule,
     IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
@@ -42,7 +45,8 @@ import { EventsProvider } from '../providers/events/events';
     MenuToggle,
     SettingsProvider,
     MarkjaxProvider,
-    EventsProvider
+    EventsProvider,
+    TagParserProvider
   ]
 })
 export class AppModule {}

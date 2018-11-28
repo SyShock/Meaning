@@ -1,8 +1,9 @@
 import { FolderBrowserPage } from "./../folder-browser/folder-browser";
 import { SettingsProvider } from "./../../providers/settings/settings";
+import { TagParserProvider, ITagMap } from "./../../providers/tag-parser/tag-parser";
 import { PopOver } from "./../../components/pop-over/pop-over";
 
-import { Component, Renderer } from "@angular/core";
+import { Component } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -35,6 +36,8 @@ export class SettingsPage {
   textColor: string;
   textFocus: boolean;
   autoSaveEnabled: boolean;
+  
+  TagMap: ITagMap
 
   constructor(
     public navCtrl: NavController,
@@ -42,9 +45,9 @@ export class SettingsPage {
     private popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private modalCtrl: ModalController,
-    private renderer: Renderer,
     private viewCtrl: ViewController,
     private storage: Storage,
+    private tags: TagParserProvider,
     private events: EventsProvider
   ) {
     this.headerFontOptions = [
@@ -134,7 +137,6 @@ export class SettingsPage {
   }
 
   ionViewDidLoad() {
-    console.log("ionViewDidLoad SettingsPage");
   }
 
   onFocus(el) {
@@ -203,6 +205,12 @@ export class SettingsPage {
 
   onAutoSaveToggle(value) {
     this.settings.toggleAutoSave(value);
+  }
+
+  rescanTags(){
+    const paths = this.settings.getPaths().map(el=>el.url)
+    this.tags.searchFilesFromFolders(paths)
+    console.log(paths, this.settings.getPaths())
   }
 
   showPopOver(e, data, _callback) {

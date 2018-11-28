@@ -19,7 +19,6 @@ export class ToolbarComponent {
     private events: EventsProvider,
     private parser: MarkjaxProvider
   ) {
-    console.log('Hello ToolbarComponent Component');
   }
 
   private _getFocused(){

@@ -19,7 +19,8 @@ const EventNames = {
   textChanged: 'text-changed',
   viewChanged: 'view-changed',
   settingsChanged: 'settings-changed',
-  minimizeApp: 'minimize-app'
+  minimizeApp: 'minimize-app',
+  tagsCollected: 'tags-collected'
 };
 
 @Injectable()

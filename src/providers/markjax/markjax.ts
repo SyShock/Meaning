@@ -3,12 +3,6 @@ import { Injectable } from "@angular/core";
 import markjax from "markjax";
 import marked from "marked";
 import { EventsProvider, EventNames } from '../events/events';
-/*
-  Generated class for the MarkjaxProvider provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
 
 interface IHeading {
   id: string,
@@ -39,7 +33,6 @@ export class MarkjaxProvider {
   headers : Array<IHeading> = [];
 
   constructor(private events: EventsProvider) {
-    console.log("Hello MarkjaxProvider Provider");
     var renderer = new marked.Renderer();
     renderer.listitem = text => {
       if (/^\s*\[[x ]\]\s*/.test(text)) {

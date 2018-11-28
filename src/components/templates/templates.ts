@@ -11,7 +11,6 @@ export class TemplatesComponent {
   template: Array<string> = ['crisp']
 
   constructor(private storage: Storage, private alertCtrl: AlertController) {
-    console.log('Hello TemplatesComponent Component');
   }
 
   initTemplates(obj){

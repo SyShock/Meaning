@@ -11,7 +11,6 @@ export class ExpandableComponent {
   @Output('state') onExpand: EventEmitter<any> = new EventEmitter();//intended for animations
 
   constructor() {
-    console.log('Hello ExpandableComponent Component');
   }
 
   toggleMenu(){

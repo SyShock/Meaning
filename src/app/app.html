@@ -3,7 +3,6 @@
 >
   <ion-header>
     <ion-toolbar>
-      <!-- <ion-title center >MEANING</ion-title> -->
       <ion-item id="toolbar" no-lines>
         <ion-label>
           <ion-chip *ngIf="keyword">
@@ -13,20 +12,9 @@
             </button> -->
           </ion-chip>
         </ion-label>
-        <ion-input clearInput type="search" id="title" #searchbar [(ngModel)]="searchWords" (ionFocus)="showFiles()" (ionBlur)="showMenu()"
+        <ion-input clearInput type="search" id="title" #searchbar [(ngModel)]="searchWords"
           (keyup)="searchFiles()" no-icon placeholder="M E A N I N G"></ion-input>
       </ion-item>
-      <!-- <ion-chip >
-            <ion-label>tag</ion-label>
-              <button ion-button clear color="light">
-                <ion-icon name="close"></ion-icon>
-              </button>
-          </ion-chip>
-          <ion-item></ion-item>
-          <ion-input></ion-input> -->
-      <!-- <ion-searchbar id="title" #searchbar [(ngModel)]="searchWords" (ionFocus)="showFiles()" (ionBlur)="showMenu()" (input)="searchFiles()"
-            no-icon placeholder="M E A N I N G">
-          </ion-searchbar> -->
     </ion-toolbar>
   </ion-header>
 
@@ -42,15 +30,6 @@
           </button>
         </span>
       </expandable>
-      <!-- <span *ngFor="let key in state">
-
-        <expandable #projects [expanded]="keyword.long===key" title="Bookmarks">
-          <button ion-item no-lines *ngFor="let el of state[key]" (tap)="loadProjectFiles(path.url)">
-            {{path}}
-          </button>
-        </expandable>
-      </span> -->
-
 
       <expandable #projects [expanded]="keyword && keyword.long==='bookmark'" (state)="searchKeywords($event ? 'bookmark' : null)" title="Bookmarks">
         <button ion-item no-lines *ngFor="let path of state.bookmark" (tap)="loadProjectFiles(path.element.url)">
@@ -58,17 +37,18 @@
         </button>
       </expandable>
 
-      <!-- <expandable #filesList [expanded]="keyword && (keyword.long=='files' || (state.files && keyword.long=='bookmark'))" (state)="searchKeywords($event ? 'files' : null)" title="Files">
-        <button menuClose ion-item no-lines *ngFor="let file of state.files" (tap)="openFile(file)">
-          {{file.title}}
-        </button>
-      </expandable> --> 
-
       <expandable #headers [expanded]="keyword && keyword.long=='headers'" (state)="searchKeywords($event ? 'headers' : null)" title="Headers">
         <button  ion-item no-lines *ngFor="let header of state.headers" (tap)="goToElement(header.element.id)">
             <sup>H{{header.element.level}}</sup> {{header.title}}
         </button>
       </expandable>
+
+      <expandable #headers [expanded]="keyword && keyword.long=='tags'" (state)="searchKeywords($event ? 'tags' : null)" title="Tags">
+        <button ion-item no-lines *ngFor="let tag of state.tags" (tap)="presentFilesWithTag(tag)" >
+          {{tag}}
+        </button>
+      </expandable>
+
     </ion-list>
   </ion-content>
 

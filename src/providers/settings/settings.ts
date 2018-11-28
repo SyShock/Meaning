@@ -20,7 +20,6 @@ export class SettingsProvider {
   config: IConfig
 
   constructor(private statusBar: StatusBar) {
-    console.log('Hello SettingsProvider Provider');
     this.config = {
       theme:'light-theme',
       paths: [{ name: '', url: '' }],
@@ -110,13 +109,13 @@ export class SettingsProvider {
   addPath(name, pathUrl){
     const paths = this.config.paths
     paths.push({'name': name, 'url': pathUrl})
-    console.log(name,pathUrl)
+    // console.log(name,pathUrl)
   }
 
   removePath(name){
     const paths = this.config.paths
     const index = paths.findIndex( (el) => el.name === name)
-    console.log(paths, index);
+    // console.log(paths, index);
 
     paths.splice(index, 1)
   }
