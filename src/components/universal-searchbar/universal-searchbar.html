@@ -1,0 +1,7 @@
+<div>
+  <ion-item no-lines>
+    <ion-icon item-end *ngIf="!searchMode && showSearchButton" color='black' name="search" (tap)="clickedSearch()"></ion-icon>    
+    <ion-input #searchbar [(ngModel)]="input" [class.fade-in]="searchMode" [class.fade-out]="!searchMode"
+    type="search" (keyup)="onInput($event)"></ion-input>
+  </ion-item>
+</div>

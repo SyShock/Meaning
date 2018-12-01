@@ -207,11 +207,13 @@ export class MyApp {
       let isFileAllowed = false;
       for (let fileType of allowedFileTypes) {
         const re = new RegExp(`${fileType}$`, "gm");
+        //@ts-ignore
         if (file.path.match(re)) isFileAllowed = true;
       }
       if (!isFileAllowed) {
         return false;
       }
+      //@ts-ignore
       ret.content = this.extFiles.openFile(file.path, true)
       this.events.publish(EventNames.fileOpened, ret)
       return false;
@@ -228,6 +230,7 @@ export class MyApp {
         this.initCordovaEvents()
       }
       this.events.once(EventNames.tagsCollected, () => {
+        console.log('COUGHT')
         this.state.tags = Object.keys(this.tags.TagMap);
       })
       this.events.once(EventNames.headingLoaded, (data) => {
@@ -336,6 +339,8 @@ export class MyApp {
     const filename = this._getDateAsString()
     if(this.settings.isAutoSaveEnabled()){ //inital text?, hash?
       this.events.publish(EventNames.fileToSave, filename)
+    } else {
+      this.tags.saveTagMap()
     }
   }
 

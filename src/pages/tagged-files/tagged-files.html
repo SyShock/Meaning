@@ -2,6 +2,7 @@
 
   <ion-navbar>
     <ion-title>Select File:</ion-title>
+    <universal-searchbar (toOutput)="filteredFiles" [toFilter]="files" [showSearchButton]="true" ></universal-searchbar>
   </ion-navbar>
 
 </ion-header>

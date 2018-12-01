@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as electron from 'electron';
 
 @Injectable()
 export class ElectronProvider {
@@ -7,7 +6,7 @@ export class ElectronProvider {
 
   }
   getFs(){
-    return electron.remote.require('fs')
+    // return electron.remote.require('fs')
   }
 
 }

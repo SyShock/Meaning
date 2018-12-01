@@ -326,7 +326,7 @@ export class HomePage {
     popover.dismiss();
   }
 
-  _saveFile(ret = null) { //Note: the it is like now, it will save on exit always!
+  _saveFile(ret = null) { //Note: the way it is like now, it will save on exit always!
     const fileName = this.files.openedFile || ret;
     if (fileName && fileName !== "") this.saveFile(fileName);
     else this.events.publish(EventNames.fileToSaveAs);
@@ -337,7 +337,10 @@ export class HomePage {
     if (this.hasChanged) {
       this.hasChanged = false;
       this.files.saveFile(r + ".md", this.input.nativeElement.innerText);
-      this.tags.parseContent(this.input.nativeElement.innerText, `${this.files.openedFile}.md`);
+      if (this.files.customPath)
+        this.tags.parseContent(this.input.nativeElement.innerText, `${this.files.openedFile}.md`);
+      else 
+        this.tags.parseContent(this.input.nativeElement.innerText, `${this.files.base}/${this.files.openedFile}.md`); //not sure about this
       this.showToast("File Saved");
     }
   }

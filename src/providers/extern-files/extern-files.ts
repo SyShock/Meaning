@@ -20,7 +20,6 @@ export class ExternFilesProvider {
   
 
   constructor(private platform: Platform, private events: EventsProvider) {
-    console.log("Hello ExternFilesProvider Provider");
     this.checkPlatform();
   }
 
@@ -117,7 +116,6 @@ export class ExternFilesProvider {
 
   private _electronListDirs() {
     let baseURL = this.base;
-    console.log(baseURL);
     let res: Array<string> = this.fileCalls.readdirSync(baseURL);
     return res.filter(en => {
       return this.fileCalls.statSync(baseURL + "/" + en).isDirectory();
@@ -187,7 +185,11 @@ export class ExternFilesProvider {
    */
 
   private _cordovaWrite(fileName, data) {
-    let baseURL = this.customPath ? '' : this.base;
+    let baseURL = this.base;
+    if (this.customPath) {
+      baseURL = fileName.replace(/\/([^/]+)$/g, '') //the issue is that the call demands a path
+      fileName = fileName.slice(baseURL.length + 1, fileName.length)
+    }
     let options: IWriteOptions = {
       replace: true
     };
@@ -197,17 +199,20 @@ export class ExternFilesProvider {
       .catch(e => console.log(e));
   }
 
-  private async _cordovaRead(fileName, customPath?: boolean, setAsOpenedFile?: boolean) {
-    let baseURL = customPath ? '' : this.base ;
-    this.customPath = customPath
+  private async _cordovaRead(fileName: string, customPath?: boolean, setAsOpenedFile?: boolean) {
+    let baseURL:any = this.base;
     if (setAsOpenedFile) this.onBeforeOpenFile(fileName);
+    if (customPath) {
+      baseURL = fileName.replace(/\/([^/]+)$/g, '') //the issue is that the call demands a path
+      fileName = fileName.slice(baseURL.length+1, fileName.length)
+    }
+    this.customPath = customPath
     let res = await this.fileCalls.readAsText(baseURL, fileName);
     return res;
   }
 
   private async _cordovaListDirs() {
     let baseURL = this.base;
-    console.log("ULR: ", baseURL);
     let res: Array<IEntry> = await this.fileCalls.listDir(baseURL, ".");
     let ret = res
       .filter(en => {
@@ -216,13 +221,11 @@ export class ExternFilesProvider {
       .map(en => {
         return en.name;
       });
-    console.log(ret);
     return ret;
   }
 
   private async _cordovaListFiles(suffixes?: Array<string>, customPath?: string) {
     const baseURL = customPath ? customPath : this.base;
-    console.log("ULR: ", baseURL);
     let res: Array<IEntry> = await this.fileCalls.listDir(baseURL, ".");
     let ret = res
       .filter(en => {

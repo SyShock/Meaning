@@ -26,7 +26,6 @@ Uses Ionic 3 framework and electron.
 
 ##### Considering:
 - D3 file visualization
-- File tagging & search by tags
 - File encryption
 - Cross-device synching with webRTC
 
@@ -45,6 +44,7 @@ Uses Ionic 3 framework and electron.
 - [ ] add more font styles
 - [ ] add letter spacing
 - [x] fix new lines being removed while saving
+- [x] File tagging & search by tags
 - [ ] app icon 
 - [X] enable window dragging from the top part
 - [ ] fix focus line breaking after copy-paste

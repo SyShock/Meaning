@@ -17,6 +17,7 @@ npm-debug.log*
 .tmp/
 .versions/
 .sourcemaps/
+.gradle/
 
 coverage/
 dist/

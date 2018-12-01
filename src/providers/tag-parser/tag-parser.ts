@@ -22,8 +22,8 @@ export class TagParserProvider {
   }
 
   parseContent(content: string, path: string) {
-    const regex = /#(\w+)/g
-    let matches
+    const regex = /#(\w+)/g;
+    let matches;
 
     // provided you don't have a million tags this should be ok
     // else save both [tag]:Set<path> and [path]:Set<tag>
@@ -32,6 +32,7 @@ export class TagParserProvider {
       const set = this.TagMap[key]
       if(set.has(path)) currentFileInTags.push(key)
     })
+
     let tagsInFile = []
     while ((matches = regex.exec(content)) !== null) {
       const key = matches[1];
@@ -41,22 +42,26 @@ export class TagParserProvider {
        tagsInFile.push(key)
     }
     
-    if(currentFileInTags.length === 0) return
-    const difs = currentFileInTags.filter((tag) => { return tagsInFile.indexOf(tag) < 0; });
-    for (const dif of difs){
-      this.TagMap[dif].delete(path)
-      if( this.TagMap[dif].size === 0 )
-        delete this.TagMap[dif]
-    }
     this.events.publish(EventNames.tagsCollected)
+
+    if(currentFileInTags.length !== 0){
+      const difs = currentFileInTags.filter((tag) => { return tagsInFile.indexOf(tag) < 0; });
+      for (const dif of difs){
+        this.TagMap[dif].delete(path)
+        if( this.TagMap[dif].size === 0 )
+          delete this.TagMap[dif]
+      }
+    }
   }
 
-  searchFilesFromFolders(folders: Array<string>){
+  async searchFilesFromFolders(folders: Array<string>){
+    this.TagMap = {};
     for (const folder of folders){
-      this.files.listFiles(suffixes, folder).forEach(name => {
+      const result = await this.files.listFiles(suffixes, folder)
+      result.forEach( async (name) => {
         const filePath = `${folder}/${name}`;
-        const args:any = {
-          content: this.files.openFile(filePath, true, false)
+        const args = {
+          content: await this.files.openFile(filePath, true, false)
         }
         this.parseContent(args.content, filePath)
       })

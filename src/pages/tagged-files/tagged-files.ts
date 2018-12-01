@@ -12,6 +12,7 @@ import { EventsProvider, EventNames } from '../../providers/events/events';
 export class TaggedFilesPage {
 
   files: Array<string>
+  filteredFiles: Array<string>
   fileOpened: boolean = false;
 
   constructor(
@@ -22,7 +23,7 @@ export class TaggedFilesPage {
   }
 
   ionViewDidLoad() {
-    this.files = this.navParams.get('filePaths')
+    this.files = Array.from(this.navParams.get('filePaths'))
   }
 
   async openFile(fileName) {
