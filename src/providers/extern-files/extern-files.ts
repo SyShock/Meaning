@@ -200,7 +200,7 @@ export class ExternFilesProvider {
   }
 
   private async _cordovaRead(fileName: string, customPath?: boolean, setAsOpenedFile?: boolean) {
-    let baseURL:any = this.base;
+    let baseURL = this.base;
     if (setAsOpenedFile) this.onBeforeOpenFile(fileName);
     if (customPath) {
       baseURL = fileName.replace(/\/([^/]+)$/g, '') //the issue is that the call demands a path
