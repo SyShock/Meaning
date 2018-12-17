@@ -1,4 +1,3 @@
-import { Events } from 'ionic-angular';
 import { Injectable } from "@angular/core";
 import markjax from "markjax";
 import marked from "marked";
@@ -108,23 +107,18 @@ export class MarkjaxProvider {
     let wrap;
     switch (mode) {
       case WrapModes.ITALIC:
-        wrap = `*`;
-        break;
+        wrap = `*`; break;
       case WrapModes.BOLD:
-        wrap = `**`;
-        break;
+        wrap = `**`; break;
       case WrapModes.STRIKEOUT:
-        wrap = `~~`;
-        break;
+        wrap = `~~`; break;
       case WrapModes.CODE:
-        wrap = "`";
-        break;
+        wrap = "`"; break;
       case WrapModes.CODE_BLOCK:
         // wrap = "```";
         this._wrapInCode();
         return;
-      default:
-        break;
+      default: break;
     }
     text = `${wrap}${text}${wrap}`;
     document.execCommand("insertText", false, text);

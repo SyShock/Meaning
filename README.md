@@ -47,7 +47,7 @@ Uses Ionic 3 framework and electron.
 - [x] File tagging & search by tags
 - [ ] app icon 
 - [X] enable window dragging from the top part
-- [ ] fix focus line breaking after copy-paste
+- [x] fix focus line breaking after copy-paste
 - [ ] add help and cheatsheets: 
 http://reu.dimacs.rutgers.edu/Symbols.pdf,
 https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet

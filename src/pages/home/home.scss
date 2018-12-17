@@ -1,4 +1,11 @@
 page-home {
+
+  .button-clear {
+    opacity: 0.2;
+    &:hover{
+      opacity: 1;
+    }
+  }
   
   div,
   p {
@@ -117,6 +124,9 @@ page-home {
   [contentEditable=true]:empty:not(:focus):before{
     content:attr(data-text);
   }
+  #filler:empty:not(:focus):before{
+    content:attr(data-text);
+  }
   #wide {
 
     display: grid;
@@ -162,7 +172,6 @@ page-home {
       font-family: "monospace";
       font-size: 1em;
       background-color: #f6f8fa;
-      padding-right: 16px;
     }
     blockquote {
       padding: 0 1em;

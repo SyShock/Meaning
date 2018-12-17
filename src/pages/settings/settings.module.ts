@@ -1,5 +1,4 @@
 import { PopOver } from './../../components/pop-over/pop-over';
-import { ColorPickerModule } from 'ngx-color-picker';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SettingsPage } from './settings';
@@ -11,7 +10,6 @@ import { SettingsPage } from './settings';
   ],
   imports: [
     IonicPageModule.forChild(SettingsPage),
-    ColorPickerModule
   ],
   entryComponents: [PopOver]
 })

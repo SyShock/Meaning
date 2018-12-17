@@ -56,6 +56,12 @@ export class HomePage {
   viewChanged: boolean = false;
   hasChanged: boolean = false;
 
+  isOnPasteInited: boolean = false;
+
+  inputNative: HTMLElement
+
+  polymorphic: Function
+
   constructor(
     public navCtrl: NavController,
     private files: ExternFilesProvider,
@@ -83,7 +89,9 @@ export class HomePage {
 
   ionViewDidEnter() {
     this.getSettingsConfig();
-    this.searchBar.config({ input: this.input.nativeElement });
+    this.inputNative = this.input.nativeElement;
+    // this.inputNative = document.createElement('input');
+    this.searchBar.config({ input: this.inputNative });
     if (this.slider) {
       this.slider.ionSlideDidChange.subscribe(() => {
         if (this.slider.getActiveIndex() === 0) {
@@ -106,12 +114,14 @@ export class HomePage {
       
     this.colorViewScreen();
     this.onResize();
+    this.initOnPaste(); //this happened twice for some reason...
+    this.polymorphic = this.onFirstInput;
     // this.render();
   }
 
   ngAfterContentChecked() {
     if (this.viewChanged && this.input && this.searchBar) {
-      this.searchBar.config({ input: this.input.nativeElement });
+      this.searchBar.config({ input: this.inputNative });
       this.viewChanged = false;
     }
   }
@@ -128,7 +138,7 @@ export class HomePage {
   onBlur() {
     if (!this.mobilePreviewMode && !this.searchMode &&
       (!this.menuCtrl.isAnimating() || !this.menuCtrl.isOpen()) ) {
-      this.input.nativeElement.focus();
+      this.inputNative.focus();
     }   
   }
 
@@ -188,7 +198,7 @@ export class HomePage {
   }
 
   render() {
-    const elInput = this.input.nativeElement;
+    const elInput = this.inputNative;
     const elOutput = this.output.nativeElement;
     this.textAreaContent = elInput.innerHTML;
     this.parser.parse(elInput.innerText, elOutput);
@@ -197,8 +207,22 @@ export class HomePage {
     this.getWordCount(elOutput.innerText);
   }
 
+  onFirstInput() {
+    const text = this.inputNative.innerText
+    this.inputNative.innerHTML = `<p>${text}</p>`
+    this.moveCursorToEnd(); 
+    this.polymorphic = this.render
+  }
+
+  moveCursorToEnd() {
+    const selection = window.getSelection()
+    selection.collapse(selection.baseNode, selection.baseNode.nodeValue.toString().length)
+  }
+
   focusCurrentLine() {
-    let focusNode = window.getSelection().focusNode;
+    const selection = window.getSelection()
+    let focusNode = selection.focusNode;
+    debugger
     let parent = focusNode ? focusNode.parentElement : null;
     let prevs = Array.from(document.querySelectorAll(".focused"));
     for (let prev of prevs) prev.classList.remove("focused");
@@ -336,11 +360,11 @@ export class HomePage {
     //requires dialogue
     if (this.hasChanged) {
       this.hasChanged = false;
-      this.files.saveFile(r + ".md", this.input.nativeElement.innerText);
+      this.files.saveFile(r + ".md", this.inputNative.innerText);
       if (this.files.customPath)
-        this.tags.parseContent(this.input.nativeElement.innerText, `${this.files.openedFile}.md`);
+        this.tags.parseContent(this.inputNative.innerText, `${this.files.openedFile}.md`);
       else 
-        this.tags.parseContent(this.input.nativeElement.innerText, `${this.files.base}/${this.files.openedFile}.md`); //not sure about this
+        this.tags.parseContent(this.inputNative.innerText, `${this.files.base}/${this.files.openedFile}.md`); //not sure about this
       this.showToast("File Saved");
     }
   }
@@ -352,9 +376,10 @@ export class HomePage {
    */
   onNewFile() {
     this.textAreaContent = '';
-    this.input.nativeElement.innerHTML = "";
+    this.inputNative.innerHTML = "";
     this.files.openedFile = "";
     this.files.clearPath();
+    this.polymorphic = this.render
     this.render();
   }
 
@@ -394,7 +419,7 @@ export class HomePage {
 
 
   onResize(e?) {
-    const elInput = this.input.nativeElement;
+    const elInput = this.inputNative;
 
     let t;
     if (e) t = e.target;
@@ -413,17 +438,30 @@ export class HomePage {
 
   }
 
+  initOnPaste() {
+    if (!this.isOnPasteInited){
+      this.inputNative.addEventListener("paste", (e) => { //find how to do this in a more 'angular way'
+        e.preventDefault();
+        //@ts-ignore
+        const text = (e.originalEvent || e).clipboardData.getData('text');
+        document.execCommand("insertText", false, text);
+      });
+      this.isOnPasteInited = true;
+    }
+  }
+
   onEditInput() {
     if (this.searchMode) this.searchBar.toggleSearch(null);
     this.searchBar.searchClear();
     this.hasChanged = true;
-    this.render()
+    this.polymorphic();
+    // this.render(); 
   }
 
   onFileOpened(r) {
     if (this.slider) this.slider.slideTo(1);
     this.isTemplate = r.isTemplate;
-    this.input.nativeElement.innerHTML = this.wrapInParagraph(r.content);
+    this.inputNative.innerHTML = this.wrapInParagraph(r.content);
     this.render();
   }
 
