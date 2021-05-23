@@ -1,4 +1,6 @@
 # Meaning
+*Project discontinued*
+
 An entirely local and private markdown/note-taking app.
 Uses Ionic 3 framework and electron. 
 
